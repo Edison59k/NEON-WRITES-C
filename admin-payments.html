@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin - Payments</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="admin-payment.css">
+    </head>
+
+    <body>
+        <!-- Neon Background -->
+        <div class="neon-background">
+            <div class="neon-grid"></div>
+        </div>
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <a href="mainpage.html" class="brand">
+                <i class="fas fa-feather"></i> Neon Writers
+            </a>
+
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Admin Panel</div>
+                    <div class="user-balance" id="userBalance">Admin</div>
+                </div>
+                <a href="index.html" class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <ul class="nav-menu">
+                    <li><a href="mainpage.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="admin-upload.html"><i class="fas fa-upload"></i> Upload Tasks</a></li>
+                    <li><a href="admin-users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="admin-bids.html"><i class="fas fa-gavel"></i> Bids Management</a></li>
+                    <li><a href="admin-payments.html" class="active"><i class="fas fa-credit-card"></i> Payments</a>
+                    </li>
+                    <li><a href="admin-reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                    <li><a href="admin-settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="page-header">
+                    <h2><i class="fas fa-credit-card"></i> Payments Management</h2>
+                    <div style="font-size: 16px; color: var(--muted-text);">
+                        Monitor and manage all payment transactions
+                    </div>
+                </div>
+
+                <!-- Payment Statistics -->
+                <div class="admin-stats">
+                    <div class="stat-badge">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-check-alt"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h4>Total Revenue</h4>
+                            <div class="value" id="totalRevenue">$0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-badge">
+                        <div class="stat-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h4>Total Paid</h4>
+                            <div class="value" id="totalPaid">$0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-badge">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h4>Pending Payments</h4>
+                            <div class="value" id="pendingPayments">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-badge">
+                        <div class="stat-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h4>Transactions</h4>
+                            <div class="value" id="totalTransactions">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h3>Today's Revenue</h3>
+                        <div class="amount" id="todayRevenue">$0</div>
+                        <div class="subtext">From 0 transactions</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>This Month</h3>
+                        <div class="amount" id="monthRevenue">$0</div>
+                        <div class="subtext">From 0 transactions</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Average Transaction</h3>
+                        <div class="amount" id="avgTransaction">$0</div>
+                        <div class="subtext">Based on all transactions</div>
+                    </div>
+                </div>
+
+                <!-- Date Range Picker -->
+                <div class="date-range-picker">
+                    <input type="date" class="date-input" id="startDate">
+                    <span style="color: var(--muted-text);">to</span>
+                    <input type="date" class="date-input" id="endDate">
+                    <button class="btn btn-secondary" onclick="applyDateFilter()">
+                        <i class="fas fa-filter"></i> Apply Filter
+                    </button>
+                    <button class="btn btn-primary" onclick="exportPayments()">
+                        <i class="fas fa-file-export"></i> Export
+                    </button>
+                </div>
+
+                <!-- Transactions Table -->
+                <div class="users-table-container">
+                    <div class="table-header">
+                        <h3 style="color: var(--light-text);">Payment Transactions</h3>
+                        <button class="btn btn-secondary" onclick="refreshPayments()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>User</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsTableBody">
+                            <!-- Payments will be populated here -->
+                        </tbody>
+                    </table>
+
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="admin-payment.js"></script>
+    </body>
+
+</html>

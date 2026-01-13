@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Available Tasks - Surveys & Tasks</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            body {
+                background-color: #f5f7fa;
+                color: #333;
+            }
+
+            /* Topbar */
+            .topbar {
+                background: white;
+                padding: 15px 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 24px;
+                color: #1e3c72;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .brand i {
+                color: #4dabf7;
+            }
+
+            .user-menu {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .user-name {
+                font-weight: 600;
+                color: #1e3c72;
+            }
+
+            .user-balance {
+                background-color: #4dabf7;
+                color: white;
+                padding: 5px 15px;
+                border-radius: 20px;
+                font-weight: 600;
+            }
+
+            .logout-btn {
+                background-color: #f03e3e;
+                color: white;
+                padding: 8px 15px;
+                border-radius: 5px;
+                text-decoration: none;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                transition: background-color 0.3s;
+            }
+
+            .logout-btn:hover {
+                background-color: #d63030;
+            }
+
+            /* Main container */
+            .container {
+                display: flex;
+                min-height: calc(100vh - 70px);
+            }
+
+            /* Sidebar */
+            .sidebar {
+                width: 250px;
+                background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
+                color: white;
+                padding: 30px 0;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .nav-menu {
+                list-style: none;
+                flex-grow: 1;
+            }
+
+            .nav-menu li {
+                margin-bottom: 5px;
+            }
+
+            .nav-menu a {
+                display: flex;
+                align-items: center;
+                padding: 15px 25px;
+                color: #d0d7e7;
+                text-decoration: none;
+                font-size: 16px;
+                font-weight: 500;
+                transition: all 0.3s;
+                border-left: 4px solid transparent;
+            }
+
+            .nav-menu a:hover {
+                background-color: rgba(255, 255, 255, 0.08);
+                color: white;
+                border-left-color: #4dabf7;
+            }
+
+            .nav-menu a.active {
+                background-color: rgba(77, 171, 247, 0.15);
+                color: white;
+                border-left-color: #4dabf7;
+            }
+
+            .nav-menu i {
+                margin-right: 12px;
+                font-size: 18px;
+                width: 24px;
+                text-align: center;
+            }
+
+            /* Main content */
+            .main-content {
+                flex-grow: 1;
+                padding: 30px;
+                overflow-y: auto;
+            }
+
+            .page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #e1e5eb;
+            }
+
+            .page-header h2 {
+                font-size: 28px;
+                color: #1e3c72;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .page-header h2 i {
+                color: #4dabf7;
+            }
+
+            /* Task stats */
+            .task-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .stat-card {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                padding: 20px;
+                text-align: center;
+            }
+
+            .stat-value {
+                font-size: 32px;
+                font-weight: 700;
+                color: #1e3c72;
+                margin-bottom: 5px;
+            }
+
+            .stat-label {
+                font-size: 14px;
+                color: #6c757d;
+            }
+
+            /* Task filters */
+            .task-filters {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 30px;
+                flex-wrap: wrap;
+            }
+
+            .filter-btn {
+                padding: 10px 20px;
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 500;
+                transition: all 0.3s;
+            }
+
+            .filter-btn.active {
+                background-color: #4dabf7;
+                color: white;
+                border-color: #4dabf7;
+            }
+
+            .filter-btn:hover:not(.active) {
+                background-color: #f8f9fa;
+            }
+
+            /* Tasks list */
+            .tasks-list {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .task-item {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                padding: 25px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: transform 0.3s, box-shadow 0.3s;
+            }
+
+            .task-item:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .task-item.urgent {
+                border-left: 5px solid #f03e3e;
+            }
+
+            .task-item.warning {
+                border-left: 5px solid #ffc107;
+            }
+
+            .task-item.normal {
+                border-left: 5px solid #4dabf7;
+            }
+
+            .task-info {
+                flex-grow: 1;
+            }
+
+            .task-info h3 {
+                color: #1e3c72;
+                margin-bottom: 8px;
+                font-size: 18px;
+            }
+
+            .task-info p {
+                color: #5a6c7d;
+                margin-bottom: 15px;
+                font-size: 14px;
+            }
+
+            .task-meta {
+                display: flex;
+                gap: 20px;
+                font-size: 14px;
+            }
+
+            .meta-item {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                color: #6c757d;
+            }
+
+            .meta-item i {
+                color: #4dabf7;
+            }
+
+            .task-deadline {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                min-width: 150px;
+            }
+
+            .deadline-label {
+                font-size: 13px;
+                color: #6c757d;
+                margin-bottom: 5px;
+            }
+
+            .deadline-date {
+                font-weight: 600;
+                color: #1e3c72;
+            }
+
+            .deadline-urgent {
+                color: #f03e3e !important;
+                font-weight: 600;
+            }
+
+            .deadline-warning {
+                color: #ffc107 !important;
+                font-weight: 600;
+            }
+
+            .countdown-timer {
+                font-size: 18px;
+                font-weight: 700;
+                font-family: monospace;
+                margin-top: 5px;
+                padding: 5px 10px;
+                border-radius: 5px;
+                background-color: #f8f9fa;
+            }
+
+            .countdown-urgent {
+                color: #f03e3e;
+                background-color: #fff5f5;
+            }
+
+            .countdown-warning {
+                color: #ffc107;
+                background-color: #fff9db;
+            }
+
+            .countdown-normal {
+                color: #4dabf7;
+                background-color: #f0f7ff;
+            }
+
+            .task-actions {
+                display: flex;
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: 6px;
+                border: none;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+                font-size: 14px;
+            }
+
+            .btn-primary {
+                background-color: #4dabf7;
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background-color: #339af0;
+            }
+
+            .btn-success {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .btn-success:hover {
+                background-color: #218838;
+            }
+
+            .btn-secondary {
+                background-color: #e9ecef;
+                color: #495057;
+            }
+
+            .btn-secondary:hover {
+                background-color: #dee2e6;
+            }
+
+            /* Bid limit warning */
+            .bid-limit-warning {
+                background-color: #fff3cd;
+                border: 1px solid #ffeaa7;
+                color: #856404;
+                padding: 15px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                display: none;
+            }
+
+            .bid-limit-warning.show {
+                display: flex;
+            }
+
+            .bid-limit-warning i {
+                font-size: 20px;
+            }
+
+            /* Empty state */
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            }
+
+            .empty-state i {
+                font-size: 60px;
+                margin-bottom: 20px;
+                color: #dee2e6;
+            }
+
+            .empty-state h3 {
+                color: #adb5bd;
+                margin-bottom: 10px;
+            }
+
+            /* Progress bar */
+            .progress-bar {
+                height: 8px;
+                background-color: #e9ecef;
+                border-radius: 4px;
+                margin-top: 10px;
+                overflow: hidden;
+            }
+
+            .progress-fill {
+                height: 100%;
+                background-color: #4dabf7;
+                border-radius: 4px;
+            }
+
+            /* Responsive */
+            @media (max-width: 992px) {
+                .sidebar {
+                    width: 220px;
+                }
+
+                .task-item {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 20px;
+                }
+
+                .task-deadline {
+                    align-items: flex-start;
+                }
+
+                .task-actions {
+                    width: 100%;
+                    justify-content: flex-end;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .container {
+                    flex-direction: column;
+                }
+
+                .sidebar {
+                    width: 100%;
+                    padding: 15px 0;
+                }
+
+                .nav-menu {
+                    display: flex;
+                    overflow-x: auto;
+                    padding: 0 15px;
+                }
+
+                .nav-menu li {
+                    flex-shrink: 0;
+                    margin-bottom: 0;
+                }
+
+                .nav-menu a {
+                    padding: 12px 15px;
+                    border-left: none;
+                    border-bottom: 3px solid transparent;
+                }
+
+                .nav-menu a.active {
+                    border-left: none;
+                    border-bottom-color: #4dabf7;
+                }
+
+                .task-filters {
+                    overflow-x: auto;
+                    padding-bottom: 10px;
+                }
+
+                .filter-btn {
+                    flex-shrink: 0;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Topbar -->
+        <div class="topbar">
+            <a href="mainpage.html" class="brand">
+                <i class="fas fa-feather"></i> Neon Writers
+            </a>
+
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-name" id="userName">New User</div>
+                    <div class="user-balance" id="userBalance">KES 0</div>
+                </div>
+                <a href="index.html" class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <ul class="nav-menu">
+                    <li><a href="mainpage.html"><i class="fas fa-home"></i> Dashboard</a></li>
+
+                    <li><a href="payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="my-bids.html"><i class="fas fa-gavel"></i> My Bids</a></li>
+                    <li><a href="assigned-tasks.html" class="active"><i class="fas fa-clipboard-list"></i> Available
+                            Tasks</a></li>
+                    <li><a href="completed.html"><i class="fas fa-check-circle"></i> Completed</a></li>
+                    <li><a href="support.html"><i class="fas fa-headset"></i> Support</a></li>
+                    <li><a href="profile.html"><i class="fas fa-user"></i> My Profile</a></li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="page-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Available Tasks</h2>
+                    <div style="font-size: 16px; color: #6c757d;">
+                        <i class="fas fa-info-circle" style="color: #4dabf7;"></i>
+                        <strong id="availableTasksCount">5 new tasks</strong> available for bidding
+                    </div>
+                </div>
+
+                <!-- Bid Limit Warning -->
+                <div class="bid-limit-warning" id="bidLimitWarning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong>Bid Limit:</strong> You can only have a maximum of 2 active bids at a time.
+                        You currently have <span id="currentBidCount">0</span>/2 active bids.
+                    </div>
+                </div>
+
+                <!-- Task Statistics -->
+                <div class="task-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalTasksCount">5</div>
+                        <div class="stat-label">Available Tasks</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-value" id="pendingBids">0</div>
+                        <div class="stat-label">Pending Bids</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-value" id="potentialEarnings">$175</div>
+                        <div class="stat-label">Potential Earnings</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-value" id="endingSoon">2</div>
+                        <div class="stat-label">Ending Soon</div>
+                    </div>
+                </div>
+
+                <!-- Task Filters -->
+                <div class="task-filters">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-th-list"></i> All Tasks
+                    </button>
+                    <button class="filter-btn" data-filter="ending-today">
+                        <i class="fas fa-hourglass-end"></i> Ending Today
+                    </button>
+                    <button class="filter-btn" data-filter="high-reward">
+                        <i class="fas fa-dollar-sign"></i> High Reward
+                    </button>
+                    <button class="filter-btn" data-filter="new-tasks">
+                        <i class="fas fa-star"></i> New Tasks
+                    </button>
+                </div>
+
+                <!-- Tasks List -->
+                <div class="tasks-list" id="tasksContainer">
+                    <!-- Tasks will be dynamically loaded here -->
+                </div>
+
+                <!-- New User Message -->
+                <div class="empty-state" id="noTasksMessage" style="display: none;">
+                    <i class="fas fa-clipboard-check"></i>
+                    <h3>No Available Tasks</h3>
+                    <p>Check back later for new task opportunities.</p>
+                    <div style="margin-top: 20px;">
+                        <a href="mainpage.html" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Go to Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <!-- No Recent Activities Section (as mentioned in requirements) -->
+                <div style="margin-top: 50px;">
+                    <h3 style="color: #1e3c72; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-history" style="color: #6c757d;"></i> Recent Activities
+                    </h3>
+
+                    <div
+                        style="background-color: white; border-radius: 10px; padding: 40px 20px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); text-align: center;">
+                        <i class="fas fa-user-clock" style="font-size: 50px; color: #dee2e6; margin-bottom: 20px;"></i>
+                        <h4 style="color: #adb5bd; margin-bottom: 10px;">No Recent Activities</h4>
+                        <p style="color: #6c757d;">You're a new user. Start by bidding on available tasks!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Updated JavaScript for assigned-tasks.html
+
+            // Task Data - Load from localStorage
+            let tasks = JSON.parse(localStorage.getItem('neon_writers_tasks') || '[]');
+
+            // Filter to only show available tasks
+            tasks = tasks.filter(task => task.status === 'available');
+
+            // Convert deadline strings to Date objects
+            tasks.forEach(task => {
+                if (typeof task.deadline === 'string') {
+                    task.deadline = new Date(task.deadline);
+                }
+            });
+
+            // If no tasks from localStorage, use demo tasks
+            if (tasks.length === 0) {
+                tasks = [
+                    {
+                        id: 1,
+                        title: "Website Content Creation",
+                        description: "Create engaging content for a tech startup website. Need 5 blog posts (500 words each) about AI trends.",
+                        reward: 45.00,
+                        timeNeeded: "3-4 hours",
+                        status: "available",
+                        deadline: new Date(Date.now() + 24 * 60 * 60 * 1000),
+                        priority: "urgent",
+                        category: "Writing"
+                    },
+                    {
+                        id: 2,
+                        title: "Social Media Marketing Survey",
+                        description: "Complete a comprehensive survey about social media marketing strategies for small businesses.",
+                        reward: 25.00,
+                        timeNeeded: "30-40 minutes",
+                        status: "available",
+                        deadline: new Date(Date.now() + 48 * 60 * 60 * 1000),
+                        priority: "warning",
+                        category: "Survey"
+                    },
+                    {
+                        id: 3,
+                        title: "Product Description Writing",
+                        description: "Write compelling product descriptions for an e-commerce store (20 products in electronics category).",
+                        reward: 35.00,
+                        timeNeeded: "2-3 hours",
+                        status: "available",
+                        deadline: new Date(Date.now() + 72 * 60 * 60 * 1000),
+                        priority: "normal",
+                        category: "Writing"
+                    },
+                    {
+                        id: 4,
+                        title: "Customer Service Experience Study",
+                        description: "Participate in a research study about customer service experiences across different industries.",
+                        reward: 40.00,
+                        timeNeeded: "45-60 minutes",
+                        status: "available",
+                        deadline: new Date(Date.now() + 36 * 60 * 60 * 1000),
+                        priority: "warning",
+                        category: "Research"
+                    },
+                    {
+                        id: 5,
+                        title: "SEO Article Writing",
+                        description: "Write SEO-optimized articles about digital marketing trends. Need 3 articles (800 words each).",
+                        reward: 30.00,
+                        timeNeeded: "4-5 hours",
+                        status: "available",
+                        deadline: new Date(Date.now() + 60 * 60 * 60 * 1000),
+                        priority: "normal",
+                        category: "Writing"
+                    }
+                ];
+            }
+
+            // Load user data
+            document.addEventListener('DOMContentLoaded', function () {
+                const userData = JSON.parse(localStorage.getItem('neon_writers_user') || '{}');
+                if (userData.firstName || userData.name) {
+                    document.getElementById('userName').textContent = userData.firstName || userData.name;
+                }
+                if (userData.balance) {
+                    document.getElementById('userBalance').textContent = `KES ${userData.balance}`;
+                }
+
+                // Update available tasks count in header
+                document.getElementById('availableTasksCount').innerHTML = `<strong>${tasks.length} new tasks</strong> available for bidding`;
+
+                // Check user's current bids and show warning if needed
+                checkBidLimit();
+
+                renderTasks();
+                startCountdownTimers();
+                setupFilterButtons();
+                setupBidButtons();
+                updateStats();
+            });
+
+            // Check user's bid limit
+            function checkBidLimit() {
+                const userData = JSON.parse(localStorage.getItem('neon_writers_user') || '{}');
+                const userBids = JSON.parse(localStorage.getItem('neon_writers_user_bids') || '[]');
+
+                // Get current user's active bids
+                const userCurrentBids = userBids.filter(bid =>
+                    (bid.userId === userData.email || bid.userId === userData.id) &&
+                    (bid.status === 'under-review' || bid.status === 'pending' || bid.status === 'under_review')
+                );
+
+                const currentBidCount = userCurrentBids.length;
+                document.getElementById('currentBidCount').textContent = currentBidCount;
+
+                // Show warning if user has 2 or more active bids
+                if (currentBidCount >= 2) {
+                    document.getElementById('bidLimitWarning').classList.add('show');
+                } else {
+                    document.getElementById('bidLimitWarning').classList.remove('show');
+                }
+
+                return currentBidCount;
+            }
+
+            // Render tasks to the page
+            function renderTasks() {
+                const container = document.getElementById('tasksContainer');
+                const noTasksMessage = document.getElementById('noTasksMessage');
+
+                if (tasks.length === 0) {
+                    container.style.display = 'none';
+                    noTasksMessage.style.display = 'block';
+                    return;
+                }
+
+                container.innerHTML = '';
+                tasks.forEach(task => {
+                    const timeLeft = calculateTimeLeft(task.deadline);
+                    const deadlineClass = getDeadlineClass(timeLeft.hours);
+                    const countdownClass = getCountdownClass(timeLeft.hours);
+
+                    const taskElement = document.createElement('div');
+                    taskElement.className = `task-item ${task.priority || 'normal'}`;
+                    taskElement.dataset.id = task.id;
+                    taskElement.dataset.category = task.category;
+                    taskElement.dataset.priority = task.priority || 'normal';
+
+                    taskElement.innerHTML = `
+                        <div class="task-info">
+                            <h3>${task.title}</h3>
+                            <p>${task.description}</p>
+                            <div class="task-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-dollar-sign"></i> Reward: $${task.reward.toFixed(2)}
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i> Time needed: ${task.timeNeeded}
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-tag"></i> Category: ${task.category}
+                                </div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="task-deadline">
+                            <div class="deadline-label">Bidding Ends In</div>
+                            <div class="deadline-date ${deadlineClass}">
+                                ${formatDate(task.deadline)}
+                            </div>
+                            <div class="countdown-timer ${countdownClass}" id="countdown-${task.id}">
+                                ${formatTimeLeft(timeLeft)}
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="btn btn-primary bid-btn" data-task-id="${task.id}">
+                                <i class="fas fa-gavel"></i> Place Bid
+                            </button>
+                            <button class="btn btn-secondary view-details-btn" data-task-id="${task.id}">
+                                Details
+                            </button>
+                        </div>
+                    `;
+
+                    container.appendChild(taskElement);
+                });
+            }
+
+            // Calculate time left until deadline
+            function calculateTimeLeft(deadline) {
+                const now = new Date();
+                const timeDiff = deadline - now;
+
+                if (timeDiff <= 0) {
+                    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+                }
+
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                return { days, hours, minutes, seconds };
+            }
+
+            // Format date for display
+            function formatDate(date) {
+                if (!(date instanceof Date)) {
+                    date = new Date(date);
+                }
+                return date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
+
+            // Format time left for display
+            function formatTimeLeft(timeLeft) {
+                if (timeLeft.days > 0) {
+                    return `${timeLeft.days}d ${timeLeft.hours}h`;
+                } else if (timeLeft.hours > 0) {
+                    return `${timeLeft.hours}h ${timeLeft.minutes}m`;
+                } else if (timeLeft.minutes > 0) {
+                    return `${timeLeft.minutes}m ${timeLeft.seconds}s`;
+                } else {
+                    return `${timeLeft.seconds}s`;
+                }
+            }
+
+            // Get CSS class for deadline based on hours left
+            function getDeadlineClass(hoursLeft) {
+                if (hoursLeft < 24) return 'deadline-urgent';
+                if (hoursLeft < 48) return 'deadline-warning';
+                return '';
+            }
+
+            // Get CSS class for countdown timer
+            function getCountdownClass(hoursLeft) {
+                if (hoursLeft < 24) return 'countdown-urgent';
+                if (hoursLeft < 48) return 'countdown-warning';
+                return 'countdown-normal';
+            }
+
+            // Start countdown timers
+            function startCountdownTimers() {
+                setInterval(() => {
+                    tasks.forEach(task => {
+                        const timeLeft = calculateTimeLeft(task.deadline);
+                        const countdownElement = document.getElementById(`countdown-${task.id}`);
+
+                        if (countdownElement) {
+                            countdownElement.textContent = formatTimeLeft(timeLeft);
+
+                            // Update classes based on time left
+                            const newClass = getCountdownClass(timeLeft.hours + (timeLeft.days * 24));
+                            countdownElement.className = `countdown-timer ${newClass}`;
+                        }
+                    });
+                }, 1000);
+            }
+
+            // Setup filter buttons
+            function setupFilterButtons() {
+                const filterButtons = document.querySelectorAll('.filter-btn');
+                const taskItems = document.querySelectorAll('.task-item');
+
+                filterButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const filter = this.getAttribute('data-filter');
+
+                        // Update active button
+                        filterButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+
+                        // Filter tasks
+                        taskItems.forEach(task => {
+                            const category = task.getAttribute('data-category');
+                            const priority = task.getAttribute('data-priority');
+                            const taskId = task.getAttribute('data-id');
+                            const taskData = tasks.find(t => t.id == taskId);
+                            const timeLeft = calculateTimeLeft(taskData.deadline);
+
+                            if (filter === 'all') {
+                                task.style.display = 'flex';
+                            } else if (filter === 'ending-today' && timeLeft.hours < 24) {
+                                task.style.display = 'flex';
+                            } else if (filter === 'high-reward' && taskData.reward >= 35) {
+                                task.style.display = 'flex';
+                            } else if (filter === 'new-tasks' && timeLeft.hours > 48) {
+                                task.style.display = 'flex';
+                            } else {
+                                task.style.display = 'none';
+                            }
+                        });
+                    });
+                });
+            }
+
+            // Setup bid buttons
+            function setupBidButtons() {
+                document.addEventListener('click', function (e) {
+                    // Handle bid button click
+                    if (e.target.classList.contains('bid-btn') ||
+                        e.target.closest('.bid-btn')) {
+                        const button = e.target.classList.contains('bid-btn') ?
+                            e.target : e.target.closest('.bid-btn');
+                        const taskId = button.getAttribute('data-task-id');
+                        placeBid(taskId);
+                    }
+
+                    // Handle details button click
+                    if (e.target.classList.contains('view-details-btn') ||
+                        e.target.closest('.view-details-btn')) {
+                        const button = e.target.classList.contains('view-details-btn') ?
+                            e.target : e.target.closest('.view-details-btn');
+                        const taskId = button.getAttribute('data-task-id');
+                        viewTaskDetails(taskId);
+                    }
+                });
+            }
+
+            // Place bid function (UPDATED with 2-task limit)
+            function placeBid(taskId) {
+                const task = tasks.find(t => t.id == taskId);
+                if (!task) return;
+
+                // Get current user data
+                const userData = JSON.parse(localStorage.getItem('neon_writers_user') || '{}');
+
+                // Check user's current bids
+                const currentBidCount = checkBidLimit();
+
+                // Check if user has reached maximum bids (2)
+                if (currentBidCount >= 2) {
+                    alert('You can only bid on maximum 2 tasks at a time. Please complete or withdraw from one of your current bids before placing a new one.');
+                    return;
+                }
+
+                // Get user's current bids to check for duplicates
+                const userBids = JSON.parse(localStorage.getItem('neon_writers_user_bids') || '[]');
+                const alreadyBid = userBids.some(bid =>
+                    (bid.userId === userData.email || bid.userId === userData.id) &&
+                    bid.taskId == taskId &&
+                    (bid.status === 'under-review' || bid.status === 'pending' || bid.status === 'under_review')
+                );
+
+                if (alreadyBid) {
+                    alert('You have already placed a bid on this task.');
+                    return;
+                }
+
+                // Confirm bid placement
+                if (confirm(`Place bid for "${task.title}"?\nReward: $${task.reward.toFixed(2)}\n\nYou have ${currentBidCount}/2 active bids.`)) {
+                    // Create bid object
+                    const bid = {
+                        id: Date.now(),
+                        taskId: task.id,
+                        taskTitle: task.title,
+                        userId: userData.email || userData.id,
+                        userName: `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || userData.name,
+                        amount: task.reward,
+                        reward: task.reward,
+                        bidDate: new Date().toISOString(),
+                        status: 'under-review',
+                        deadline: task.deadline instanceof Date ? task.deadline.toISOString() : task.deadline,
+                        category: task.category,
+                        timeNeeded: task.timeNeeded
+                    };
+
+                    // Save bid to global bids list
+                    const allBids = JSON.parse(localStorage.getItem('neon_writers_user_bids') || '[]');
+                    allBids.push(bid);
+                    localStorage.setItem('neon_writers_user_bids', JSON.stringify(allBids));
+
+                    // Also save to task's bid array in the main tasks list
+                    const allTasks = JSON.parse(localStorage.getItem('neon_writers_tasks') || '[]');
+                    const taskIndex = allTasks.findIndex(t => t.id == taskId);
+                    if (taskIndex > -1) {
+                        if (!allTasks[taskIndex].bids) {
+                            allTasks[taskIndex].bids = [];
+                        }
+                        allTasks[taskIndex].bids.push({
+                            userId: userData.email || userData.id,
+                            userName: `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || userData.name,
+                            bidDate: new Date().toISOString()
+                        });
+                        localStorage.setItem('neon_writers_tasks', JSON.stringify(allTasks));
+                    }
+
+                    // Update user's bids array in their profile
+                    if (!userData.bids) {
+                        userData.bids = [];
+                    }
+                    userData.bids.push(bid);
+                    localStorage.setItem('neon_writers_user', JSON.stringify(userData));
+
+                    // Remove task from available tasks display
+                    const taskIndexInDisplay = tasks.findIndex(t => t.id == taskId);
+                    if (taskIndexInDisplay > -1) {
+                        tasks.splice(taskIndexInDisplay, 1);
+                    }
+
+                    // Update UI
+                    renderTasks();
+                    updateStats();
+                    checkBidLimit();
+
+                    // Update task statistics for admin
+                    updateTaskStatistics();
+
+                    // Show success message
+                    alert(`Bid placed successfully! You now have ${currentBidCount + 1}/2 active bids.\n\nThe task has been moved to "Under Review" on your My Bids page.`);
+
+                    // Redirect to My Bids page after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = 'my-bids.html';
+                    }, 2000);
+                }
+            }
+
+            // View task details
+            function viewTaskDetails(taskId) {
+                const task = tasks.find(t => t.id == taskId);
+                if (!task) return;
+
+                const details = `
+                    Task: ${task.title}
+                    Reward: $${task.reward.toFixed(2)}
+                    Time Needed: ${task.timeNeeded}
+                    Category: ${task.category}
+                    Deadline: ${formatDate(task.deadline)}
+                    Description: ${task.description}
+                `;
+
+                alert(details);
+            }
+
+            // Update statistics (UPDATED)
+            function updateStats() {
+                // Calculate ending soon count (within 24 hours)
+                const endingSoon = tasks.filter(task => {
+                    const deadline = new Date(task.deadline);
+                    const now = new Date();
+                    const timeDiff = deadline - now;
+                    const hoursLeft = timeDiff / (1000 * 60 * 60);
+                    return hoursLeft < 24;
+                }).length;
+
+                // Calculate potential earnings
+                const potentialEarnings = tasks.reduce((total, task) => total + task.reward, 0);
+
+                // Get user's pending bids count
+                const userData = JSON.parse(localStorage.getItem('neon_writers_user') || '{}');
+                const userBids = JSON.parse(localStorage.getItem('neon_writers_user_bids') || '[]');
+                const pendingBids = userBids.filter(bid =>
+                    (bid.userId === userData.email || bid.userId === userData.id) &&
+                    (bid.status === 'under-review' || bid.status === 'under_review')
+                ).length;
+
+                // Update display
+                document.getElementById('totalTasksCount').textContent = tasks.length;
+                document.getElementById('pendingBids').textContent = pendingBids;
+                document.getElementById('potentialEarnings').textContent = `$${potentialEarnings.toFixed(2)}`;
+                document.getElementById('endingSoon').textContent = endingSoon;
+
+                // Update available tasks count in header
+                document.getElementById('availableTasksCount').innerHTML = `<strong>${tasks.length} new tasks</strong> available for bidding`;
+
+                // Save updated stats to localStorage for admin page
+                const stats = {
+                    totalTasksCount: tasks.length,
+                    potentialEarnings: potentialEarnings,
+                    endingSoon: endingSoon,
+                    lastUpdated: new Date().toISOString()
+                };
+                localStorage.setItem('neon_writers_task_stats', JSON.stringify(stats));
+            }
+
+            // Update task statistics for admin
+            function updateTaskStatistics() {
+                const allTasks = JSON.parse(localStorage.getItem('neon_writers_tasks') || '[]');
+                const availableTasks = allTasks.filter(task => task.status === 'available');
+
+                const endingSoon = availableTasks.filter(task => {
+                    const deadline = new Date(task.deadline);
+                    const now = new Date();
+                    const timeDiff = deadline - now;
+                    const hoursLeft = timeDiff / (1000 * 60 * 60);
+                    return hoursLeft < 24;
+                }).length;
+
+                const potentialEarnings = availableTasks.reduce((sum, task) => sum + task.reward, 0);
+
+                const stats = {
+                    totalTasksCount: availableTasks.length,
+                    potentialEarnings: potentialEarnings,
+                    endingSoon: endingSoon,
+                    lastUpdated: new Date().toISOString()
+                };
+
+                localStorage.setItem('neon_writers_task_stats', JSON.stringify(stats));
+            }
+
+            // Initialize stats
+            updateStats();
+
+            // Logout function
+            document.getElementById('logoutBtn').addEventListener('click', function (e) {
+                e.preventDefault();
+                localStorage.removeItem('neon_writers_logged_in');
+                alert('Logged out successfully!');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 500);
+            });
+
+            // Auto-refresh tasks every 30 seconds
+            setInterval(() => {
+                // Reload tasks from localStorage
+                const updatedTasks = JSON.parse(localStorage.getItem('neon_writers_tasks') || '[]');
+                const availableUpdatedTasks = updatedTasks.filter(task => task.status === 'available');
+
+                // Convert deadline strings to Date objects
+                availableUpdatedTasks.forEach(task => {
+                    if (typeof task.deadline === 'string') {
+                        task.deadline = new Date(task.deadline);
+                    }
+                });
+
+                // Update tasks array
+                tasks.length = 0;
+                tasks.push(...availableUpdatedTasks);
+
+                // Update UI if tasks have changed
+                renderTasks();
+                updateStats();
+                checkBidLimit();
+            }, 30000); // Check every 30 seconds
+        </script>
+    </body>
+
+</html>

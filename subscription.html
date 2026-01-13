@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Subscription - Surveys & Tasks</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            body {
+                background-color: #f5f7fa;
+                color: #333;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Topbar */
+            .topbar {
+                background: white;
+                padding: 15px 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                position: sticky;
+                top: 0;
+                z-index: 100;
+            }
+
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .logo h1 {
+                font-size: 24px;
+                color: #1e3c72;
+            }
+
+            .logo i {
+                color: #4dabf7;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .user-profile {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: #4dabf7;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+            }
+
+            /* Main container */
+            .container {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 40px 20px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            /* Progress steps */
+            .progress-steps {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 50px;
+                width: 100%;
+                max-width: 800px;
+                position: relative;
+            }
+
+            .step {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                z-index: 2;
+                flex: 1;
+            }
+
+            .step-circle {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                background-color: #e9ecef;
+                color: #6c757d;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 18px;
+                margin-bottom: 10px;
+                border: 3px solid white;
+                box-shadow: 0 0 0 3px #e9ecef;
+            }
+
+            .step.active .step-circle {
+                background-color: #4dabf7;
+                color: white;
+                box-shadow: 0 0 0 3px #4dabf7;
+            }
+
+            .step.completed .step-circle {
+                background-color: #28a745;
+                color: white;
+                box-shadow: 0 0 0 3px #28a745;
+            }
+
+            .step.completed .step-circle::after {
+                content: '✓';
+            }
+
+            .step-label {
+                font-size: 14px;
+                color: #6c757d;
+                font-weight: 500;
+            }
+
+            .step.active .step-label {
+                color: #4dabf7;
+                font-weight: 600;
+            }
+
+            .progress-line {
+                position: absolute;
+                top: 25px;
+                left: 10%;
+                right: 10%;
+                height: 4px;
+                background-color: #e9ecef;
+                z-index: 1;
+            }
+
+            .progress-fill {
+                height: 100%;
+                background-color: #28a745;
+                width: 33%;
+                transition: width 0.5s ease;
+            }
+
+            /* Subscription card */
+            .subscription-card {
+                background-color: white;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                padding: 40px;
+                width: 100%;
+                max-width: 800px;
+                margin-bottom: 40px;
+            }
+
+            .card-header {
+                text-align: center;
+                margin-bottom: 40px;
+            }
+
+            .card-header h2 {
+                font-size: 32px;
+                color: #1e3c72;
+                margin-bottom: 10px;
+            }
+
+            .card-header p {
+                color: #6c757d;
+                font-size: 16px;
+            }
+
+            .card-header .highlight {
+                color: #4dabf7;
+                font-weight: 600;
+            }
+
+            /* Tasks selection */
+            .tasks-selection {
+                margin-bottom: 40px;
+            }
+
+            .section-title {
+                font-size: 20px;
+                color: #1e3c72;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .section-title i {
+                color: #4dabf7;
+            }
+
+            .tasks-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+
+            .task-option {
+                background-color: #f8f9fa;
+                border: 2px solid #e9ecef;
+                border-radius: 10px;
+                padding: 20px;
+                cursor: pointer;
+                transition: all 0.3s;
+                position: relative;
+            }
+
+            .task-option:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+                border-color: #4dabf7;
+            }
+
+            .task-option.selected {
+                border-color: #4dabf7;
+                background-color: #e7f5ff;
+                box-shadow: 0 5px 15px rgba(77, 171, 247, 0.2);
+            }
+
+            .task-option h4 {
+                color: #1e3c72;
+                margin-bottom: 10px;
+                font-size: 18px;
+            }
+
+            .task-price {
+                font-size: 24px;
+                font-weight: 700;
+                color: #28a745;
+                margin-bottom: 5px;
+            }
+
+            .task-price span {
+                font-size: 14px;
+                color: #6c757d;
+                font-weight: normal;
+            }
+
+            .task-description {
+                font-size: 14px;
+                color: #6c757d;
+                margin-top: 10px;
+            }
+
+            .selected-badge {
+                position: absolute;
+                top: -10px;
+                right: 10px;
+                background-color: #4dabf7;
+                color: white;
+                padding: 5px 15px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            /* Payment form */
+            .payment-form {
+                margin-bottom: 40px;
+            }
+
+            .form-group {
+                margin-bottom: 25px;
+            }
+
+            .form-group label {
+                display: block;
+                font-weight: 600;
+                margin-bottom: 8px;
+                color: #495057;
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                width: 100%;
+                padding: 14px 15px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 16px;
+                font-family: inherit;
+                transition: border 0.3s;
+            }
+
+            .form-group input:focus,
+            .form-group select:focus,
+            .form-group textarea:focus {
+                outline: none;
+                border-color: #4dabf7;
+                box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.2);
+            }
+
+            .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+
+            .payment-methods {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                margin-top: 10px;
+            }
+
+            .payment-method {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 12px 20px;
+                background-color: #f8f9fa;
+                border: 2px solid #e9ecef;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s;
+                flex: 1;
+                min-width: 150px;
+            }
+
+            .payment-method:hover {
+                border-color: #4dabf7;
+                background-color: #e7f5ff;
+            }
+
+            .payment-method.selected {
+                border-color: #4dabf7;
+                background-color: #e7f5ff;
+                box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.2);
+            }
+
+            .payment-icon {
+                font-size: 24px;
+                color: #4dabf7;
+            }
+
+            .payment-name {
+                font-weight: 600;
+                color: #495057;
+            }
+
+            .help-text {
+                font-size: 14px;
+                color: #6c757d;
+                margin-top: 5px;
+            }
+
+            .request-method {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                color: #4dabf7;
+                text-decoration: none;
+                font-weight: 500;
+                margin-top: 10px;
+                cursor: pointer;
+            }
+
+            .request-method:hover {
+                text-decoration: underline;
+            }
+
+            /* Summary */
+            .summary-box {
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                padding: 25px;
+                margin-top: 30px;
+                border: 1px solid #e9ecef;
+            }
+
+            .summary-title {
+                font-size: 18px;
+                color: #1e3c72;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .summary-item {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 15px;
+            }
+
+            .summary-label {
+                color: #6c757d;
+            }
+
+            .summary-value {
+                font-weight: 600;
+                color: #1e3c72;
+            }
+
+            .summary-total {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 2px solid #dee2e6;
+                font-size: 20px;
+            }
+
+            .total-label {
+                color: #1e3c72;
+                font-weight: 700;
+            }
+
+            .total-value {
+                color: #28a745;
+                font-weight: 700;
+            }
+
+            /* Buttons */
+            .action-buttons {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 30px;
+            }
+
+            .btn {
+                padding: 15px 30px;
+                border-radius: 8px;
+                border: none;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .btn-primary {
+                background-color: #4dabf7;
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background-color: #339af0;
+            }
+
+            .btn-secondary {
+                background-color: #e9ecef;
+                color: #495057;
+            }
+
+            .btn-secondary:hover {
+                background-color: #dee2e6;
+            }
+
+            .btn-success {
+                background-color: #28a745;
+                color: white;
+            }
+
+            .btn-success:hover {
+                background-color: #218838;
+            }
+
+            .btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+            /* Payment processing modal */
+            .payment-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.7);
+                z-index: 1000;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .modal-content {
+                background-color: white;
+                border-radius: 15px;
+                padding: 40px;
+                max-width: 500px;
+                width: 90%;
+                text-align: center;
+                animation: modalFadeIn 0.3s ease;
+            }
+
+            @keyframes modalFadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .modal-icon {
+                font-size: 60px;
+                color: #4dabf7;
+                margin-bottom: 20px;
+            }
+
+            .modal-icon.success {
+                color: #28a745;
+            }
+
+            .modal-title {
+                font-size: 24px;
+                color: #1e3c72;
+                margin-bottom: 15px;
+            }
+
+            .modal-message {
+                color: #6c757d;
+                margin-bottom: 30px;
+                line-height: 1.6;
+            }
+
+            .loader {
+                display: inline-block;
+                width: 50px;
+                height: 50px;
+                border: 5px solid #f3f3f3;
+                border-top: 5px solid #4dabf7;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-bottom: 20px;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .progress-steps {
+                    flex-direction: column;
+                    gap: 30px;
+                    margin-bottom: 30px;
+                }
+
+                .progress-line {
+                    display: none;
+                }
+
+                .step {
+                    flex-direction: row;
+                    width: 100%;
+                    max-width: 300px;
+                    justify-content: flex-start;
+                    gap: 15px;
+                }
+
+                .step-circle {
+                    margin-bottom: 0;
+                }
+
+                .tasks-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .form-row {
+                    grid-template-columns: 1fr;
+                }
+
+                .payment-methods {
+                    flex-direction: column;
+                }
+
+                .action-buttons {
+                    flex-direction: column;
+                    gap: 15px;
+                }
+
+                .btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+
+            @media (max-width: 576px) {
+                .subscription-card {
+                    padding: 25px 20px;
+                }
+
+                .card-header h2 {
+                    font-size: 24px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="logo">
+                <h1><i class="fas fa-tasks"></i> Surveys & Tasks</h1>
+            </div>
+
+            <div class="user-info">
+                <div class="user-profile">
+                    <div class="user-avatar">JD</div>
+                    <div>
+                        <div style="font-weight: 600;">John Doe</div>
+                        <div style="font-size: 13px; color: #6c757d;">New Member</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="progress-line">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="step completed" id="step1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Sign Up</div>
+            </div>
+
+            <div class="step active" id="step2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Subscription</div>
+            </div>
+
+            <div class="step" id="step3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Dashboard</div>
+            </div>
+        </div>
+
+        <!-- Subscription Card -->
+        <div class="container">
+            <div class="subscription-card">
+                <div class="card-header">
+                    <h2>Complete Your Registration</h2>
+                    <p>Choose your preferred task and pay the one-time registration fee to access your dashboard.</p>
+                    <p class="highlight">Pay once, work forever!</p>
+                </div>
+
+                <!-- Step 1: Task Selection -->
+                <div class="tasks-selection" id="stepTaskSelection">
+                    <div class="section-title">
+                        <i class="fas fa-clipboard-list"></i> Select Your Preferred Task
+                    </div>
+
+                    <div class="tasks-grid">
+                        <!-- Survey Taker -->
+                        <div class="task-option" data-task="surveys" data-price-kes="250" data-price-usd="3.5">
+                            <h4>Survey Taker</h4>
+                            <div class="task-price">KES 250 <span>($3.5)</span></div>
+                            <div class="task-description">Complete surveys and get paid for your opinions</div>
+                        </div>
+
+                        <!-- Academic Writer -->
+                        <div class="task-option" data-task="academic-writer" data-price-kes="800" data-price-usd="10">
+                            <h4>Academic Writer</h4>
+                            <div class="task-price">KES 800 <span>($10)</span></div>
+                            <div class="task-description">Write essays, research papers, and academic content</div>
+                        </div>
+
+                        <!-- Technical Writer -->
+                        <div class="task-option" data-task="technical-writer" data-price-kes="500" data-price-usd="8">
+                            <h4>Technical Writer</h4>
+                            <div class="task-price">KES 500 <span>($8)</span></div>
+                            <div class="task-description">Create technical documentation and manuals</div>
+                        </div>
+
+                        <!-- Creative Writer -->
+                        <div class="task-option" data-task="creative-writer" data-price-kes="500" data-price-usd="8">
+                            <h4>Creative Writer</h4>
+                            <div class="task-price">KES 500 <span>($8)</span></div>
+                            <div class="task-description">Write stories, poems, and creative content</div>
+                        </div>
+
+                        <!-- Copywriter -->
+                        <div class="task-option" data-task="copywriter" data-price-kes="500" data-price-usd="8">
+                            <h4>Copywriter</h4>
+                            <div class="task-price">KES 500 <span>($8)</span></div>
+                            <div class="task-description">Create persuasive marketing and advertising content</div>
+                        </div>
+
+                        <!-- Blogger -->
+                        <div class="task-option" data-task="blogger" data-price-kes="1000" data-price-usd="12">
+                            <h4>Blogger</h4>
+                            <div class="task-price">KES 1000 <span>($12)</span></div>
+                            <div class="task-description">Write blog posts on various topics and niches</div>
+                        </div>
+
+                        <!-- Journalist -->
+                        <div class="task-option" data-task="journalist" data-price-kes="800" data-price-usd="10">
+                            <h4>Journalist</h4>
+                            <div class="task-price">KES 800 <span>($10)</span></div>
+                            <div class="task-description">Write news articles and journalistic content</div>
+                        </div>
+
+                        <!-- Other -->
+                        <div class="task-option" data-task="other" data-price-kes="800" data-price-usd="10">
+                            <h4>Other Task</h4>
+                            <div class="task-price">KES 800 <span>($10)</span></div>
+                            <div class="task-description">Any other task not listed above</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Payment Details -->
+                <div class="payment-form" id="stepPaymentDetails" style="display: none;">
+                    <div class="section-title">
+                        <i class="fas fa-credit-card"></i> Payment Details
+                    </div>
+
+                    <div class="form-group">
+                        <label>Selected Task</label>
+                        <input type="text" id="selectedTaskDisplay" readonly style="background-color: #f8f9fa;">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="currency">Payment Currency</label>
+                            <select id="currency">
+                                <option value="kes">Kenyan Shillings (KES)</option>
+                                <option value="usd">US Dollars ($)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="amount">Amount to Pay</label>
+                            <input type="text" id="amount" readonly
+                                style="background-color: #f8f9fa; font-weight: 700;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Payment Address / Source</label>
+                        <input type="text" id="paymentAddress"
+                            placeholder="Enter your M-Pesa number, PayPal email, Airtel number, or Binance address">
+                        <div class="help-text">This is where you'll send payment from or receive payment instructions
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Payment Method</label>
+                        <div class="payment-methods">
+                            <div class="payment-method" data-method="mpesa">
+                                <div class="payment-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="payment-name">M-Pesa</div>
+                            </div>
+
+                            <div class="payment-method" data-method="airtel">
+                                <div class="payment-icon">
+                                    <i class="fas fa-sim-card"></i>
+                                </div>
+                                <div class="payment-name">Airtel Money</div>
+                            </div>
+
+                            <div class="payment-method" data-method="paypal">
+                                <div class="payment-icon">
+                                    <i class="fab fa-paypal"></i>
+                                </div>
+                                <div class="payment-name">PayPal</div>
+                            </div>
+
+                            <div class="payment-method" data-method="binance">
+                                <div class="payment-icon">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                                <div class="payment-name">Binance</div>
+                            </div>
+                        </div>
+
+                        <a href="#" class="request-method" id="requestOtherMethod">
+                            <i class="fas fa-question-circle"></i>
+                            Need another payment method? Request from admin
+                        </a>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Additional Notes (Optional)</label>
+                        <textarea id="notes" rows="3" placeholder="Any special instructions or questions..."></textarea>
+                    </div>
+
+                    <!-- Summary Box -->
+                    <div class="summary-box">
+                        <div class="summary-title">Order Summary</div>
+
+                        <div class="summary-item">
+                            <span class="summary-label">Selected Task:</span>
+                            <span class="summary-value" id="summaryTask">Not selected</span>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-label">Registration Fee:</span>
+                            <span class="summary-value" id="summaryFee">KES 0</span>
+                        </div>
+
+                        <div class="summary-item">
+                            <span class="summary-label">Payment Method:</span>
+                            <span class="summary-value" id="summaryMethod">Not selected</span>
+                        </div>
+
+                        <div class="summary-total">
+                            <span class="total-label">Total Amount:</span>
+                            <span class="total-value" id="totalAmount">KES 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" id="btnBack" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Back to Task Selection
+                    </button>
+
+                    <button class="btn btn-primary" id="btnNext">
+                        Continue to Payment <i class="fas fa-arrow-right"></i>
+                    </button>
+
+                    <button class="btn btn-success" id="btnPay" style="display: none;">
+                        <i class="fas fa-lock"></i> Complete Payment
+                    </button>
+                </div>
+            </div>
+
+            <div style="text-align: center; color: #6c757d; font-size: 14px; max-width: 800px;">
+                <p><i class="fas fa-shield-alt" style="color: #4dabf7; margin-right: 8px;"></i> Secure payment
+                    processing. Your information is protected with 256-bit SSL encryption.</p>
+                <p>Need help? <a href="support.html" style="color: #4dabf7; text-decoration: none;">Contact our support
+                        team</a></p>
+            </div>
+        </div>
+
+        <!-- Payment Processing Modal -->
+        <div class="payment-modal" id="paymentModal">
+            <div class="modal-content">
+                <div class="loader" id="paymentLoader"></div>
+                <div class="modal-icon" id="paymentResultIcon" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="modal-title" id="modalTitle">Processing Payment</h3>
+                <p class="modal-message" id="modalMessage">Please wait while we process your payment. Do not close this
+                    window.</p>
+                <button class="btn btn-primary" id="modalButton" style="display: none;">Continue to Dashboard</button>
+            </div>
+        </div>
+
+        <script>
+            // Global variables
+            let selectedTask = null;
+            let selectedTaskPriceKES = 0;
+            let selectedTaskPriceUSD = 0;
+            let selectedPaymentMethod = null;
+            let currentStep = 1; // 1 = task selection, 2 = payment details
+
+            // DOM elements
+            const taskOptions = document.querySelectorAll('.task-option');
+            const stepTaskSelection = document.getElementById('stepTaskSelection');
+            const stepPaymentDetails = document.getElementById('stepPaymentDetails');
+            const btnNext = document.getElementById('btnNext');
+            const btnBack = document.getElementById('btnBack');
+            const btnPay = document.getElementById('btnPay');
+            const paymentModal = document.getElementById('paymentModal');
+            const progressFill = document.getElementById('progressFill');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+
+            // Task selection
+            taskOptions.forEach(option => {
+                option.addEventListener('click', function () {
+                    // Remove selected class from all options
+                    taskOptions.forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.querySelector('.selected-badge')?.remove();
+                    });
+
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+
+                    // Add selected badge
+                    const badge = document.createElement('div');
+                    badge.className = 'selected-badge';
+                    badge.innerHTML = '<i class="fas fa-check"></i> Selected';
+                    this.appendChild(badge);
+
+                    // Set selected task data
+                    selectedTask = this.getAttribute('data-task');
+                    selectedTaskPriceKES = parseInt(this.getAttribute('data-price-kes'));
+                    selectedTaskPriceUSD = parseFloat(this.getAttribute('data-price-usd'));
+
+                    // Enable next button
+                    btnNext.disabled = false;
+                });
+            });
+
+            // Next button - move to payment details
+            btnNext.addEventListener('click', function () {
+                if (currentStep === 1) {
+                    // Validate task selection
+                    if (!selectedTask) {
+                        alert('Please select a task to continue.');
+                        return;
+                    }
+
+                    // Update UI for step 2
+                    currentStep = 2;
+                    stepTaskSelection.style.display = 'none';
+                    stepPaymentDetails.style.display = 'block';
+                    btnNext.style.display = 'none';
+                    btnBack.style.display = 'flex';
+                    btnPay.style.display = 'flex';
+
+                    // Update progress
+                    progressFill.style.width = '66%';
+                    step2.classList.remove('active');
+                    step2.classList.add('completed');
+                    step3.classList.add('active');
+
+                    // Update form with selected task
+                    updatePaymentForm();
+                }
+            });
+
+            // Back button - return to task selection
+            btnBack.addEventListener('click', function () {
+                // Update UI for step 1
+                currentStep = 1;
+                stepTaskSelection.style.display = 'block';
+                stepPaymentDetails.style.display = 'none';
+                btnNext.style.display = 'flex';
+                btnBack.style.display = 'none';
+                btnPay.style.display = 'none';
+
+                // Update progress
+                progressFill.style.width = '33%';
+                step2.classList.remove('completed');
+                step2.classList.add('active');
+                step3.classList.remove('active');
+            });
+
+            // Payment method selection
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function () {
+                    // Remove selected class from all methods
+                    paymentMethods.forEach(m => m.classList.remove('selected'));
+
+                    // Add selected class to clicked method
+                    this.classList.add('selected');
+
+                    // Set selected payment method
+                    selectedPaymentMethod = this.getAttribute('data-method');
+
+                    // Update summary
+                    updateSummary();
+                });
+            });
+
+            // Currency change
+            const currencySelect = document.getElementById('currency');
+            currencySelect.addEventListener('change', function () {
+                updateAmountDisplay();
+                updateSummary();
+            });
+
+            // Payment address input
+            const paymentAddressInput = document.getElementById('paymentAddress');
+            paymentAddressInput.addEventListener('input', function () {
+                // Enable/disable pay button based on input
+                const payButton = document.getElementById('btnPay');
+                payButton.disabled = !this.value.trim() || !selectedPaymentMethod;
+            });
+
+            // Request other payment method
+            document.getElementById('requestOtherMethod').addEventListener('click', function (e) {
+                e.preventDefault();
+                alert('To request a different payment method, please contact our admin team at:\n\nEmail: admin@surveys-tasks.com\nPhone: +254 700 123 456\n\nWe\'ll get back to you with alternative payment options within 24 hours.');
+            });
+
+            // Pay button - process payment
+            btnPay.addEventListener('click', function () {
+                // Validate payment details
+                if (!selectedPaymentMethod) {
+                    alert('Please select a payment method.');
+                    return;
+                }
+
+                const paymentAddress = document.getElementById('paymentAddress').value.trim();
+                if (!paymentAddress) {
+                    alert('Please enter your payment address (M-Pesa number, PayPal email, etc.).');
+                    return;
+                }
+
+                // Show payment modal
+                showPaymentModal();
+            });
+
+            // Modal button - finalize payment: mark user subscribed and go to dashboard
+            document.getElementById('modalButton').addEventListener('click', function () {
+                // Mark the current user as subscribed and persist
+                try {
+                    let user = JSON.parse(localStorage.getItem('neon_writers_user') || '{}');
+                    user.subscribed = true;
+                    localStorage.setItem('neon_writers_user', JSON.stringify(user));
+                    localStorage.setItem('neon_writers_logged_in', 'true');
+                } catch (e) {
+                    console.warn('Could not update subscription flag in localStorage', e);
+                }
+
+                // Close modal and navigate to dashboard
+                paymentModal.style.display = 'none';
+                // small delay so user sees change
+                setTimeout(() => {
+                    window.location.href = 'mainpage.html';
+                }, 400);
+            });
+
+            // Helper functions
+            function updatePaymentForm() {
+                // Update selected task display
+                const taskNames = {
+                    'surveys': 'Survey Taker',
+                    'academic-writer': 'Academic Writer',
+                    'technical-writer': 'Technical Writer',
+                    'creative-writer': 'Creative Writer',
+                    'copywriter': 'Copywriter',
+                    'blogger': 'Blogger',
+                    'journalist': 'Journalist',
+                    'other': 'Other Task'
+                };
+
+                document.getElementById('selectedTaskDisplay').value = taskNames[selectedTask] || 'Unknown Task';
+                updateAmountDisplay();
+                updateSummary();
+            }
+
+            function updateAmountDisplay() {
+                const currency = document.getElementById('currency').value;
+                if (currency === 'kes') {
+                    document.getElementById('amount').value = `KES ${selectedTaskPriceKES}`;
+                } else {
+                    document.getElementById('amount').value = `$${selectedTaskPriceUSD.toFixed(2)}`;
+                }
+            }
+
+            function updateSummary() {
+                const currency = document.getElementById('currency').value;
+                const taskNames = {
+                    'surveys': 'Survey Taker',
+                    'academic-writer': 'Academic Writer',
+                    'technical-writer': 'Technical Writer',
+                    'creative-writer': 'Creative Writer',
+                    'copywriter': 'Copywriter',
+                    'blogger': 'Blogger',
+                    'journalist': 'Journalist',
+                    'other': 'Other Task'
+                };
+
+                // Update task in summary
+                document.getElementById('summaryTask').textContent = taskNames[selectedTask] || 'Unknown Task';
+
+                // Update fee in summary
+                if (currency === 'kes') {
+                    document.getElementById('summaryFee').textContent = `KES ${selectedTaskPriceKES}`;
+                    document.getElementById('totalAmount').textContent = `KES ${selectedTaskPriceKES}`;
+                } else {
+                    document.getElementById('summaryFee').textContent = `$${selectedTaskPriceUSD.toFixed(2)}`;
+                    document.getElementById('totalAmount').textContent = `$${selectedTaskPriceUSD.toFixed(2)}`;
+                }
+
+                // Update payment method in summary
+                const methodNames = {
+                    'mpesa': 'M-Pesa',
+                    'airtel': 'Airtel Money',
+                    'paypal': 'PayPal',
+                    'binance': 'Binance'
+                };
+
+                document.getElementById('summaryMethod').textContent = selectedPaymentMethod ?
+                    methodNames[selectedPaymentMethod] : 'Not selected';
+            }
+
+            function showPaymentModal() {
+                paymentModal.style.display = 'flex';
+
+                // Get payment details
+                const currency = document.getElementById('currency').value;
+                const amount = currency === 'kes' ? selectedTaskPriceKES : selectedTaskPriceUSD;
+                const currencySymbol = currency === 'kes' ? 'KES' : '$';
+                const paymentAddress = document.getElementById('paymentAddress').value;
+
+                // Show processing message
+                document.getElementById('paymentLoader').style.display = 'inline-block';
+                document.getElementById('paymentResultIcon').style.display = 'none';
+                document.getElementById('modalTitle').textContent = 'Processing Payment';
+                document.getElementById('modalMessage').textContent = `Please complete the payment of ${currencySymbol} ${amount} using ${selectedPaymentMethod.toUpperCase()} from ${paymentAddress}.`;
+                document.getElementById('modalButton').style.display = 'none';
+
+                // Simulate payment processing
+                setTimeout(() => {
+                    // Hide loader, show success
+                    document.getElementById('paymentLoader').style.display = 'none';
+                    document.getElementById('paymentResultIcon').style.display = 'block';
+                    document.getElementById('modalTitle').textContent = 'Payment Successful!';
+                    document.getElementById('modalMessage').textContent = 'Your payment has been validated successfully. You now have full access to your dashboard.';
+                    document.getElementById('modalButton').style.display = 'block';
+
+                    // Update progress to step 3
+                    progressFill.style.width = '100%';
+                    step3.classList.remove('active');
+                    step3.classList.add('completed');
+                }, 3000);
+            }
+
+            function resetForm() {
+                // Close modal
+                paymentModal.style.display = 'none';
+
+                // Reset to step 1
+                currentStep = 1;
+                stepTaskSelection.style.display = 'block';
+                stepPaymentDetails.style.display = 'none';
+                btnNext.style.display = 'flex';
+                btnBack.style.display = 'none';
+                btnPay.style.display = 'none';
+
+                // Reset progress
+                progressFill.style.width = '33%';
+                step2.classList.remove('completed');
+                step2.classList.add('active');
+                step3.classList.remove('active');
+                step3.classList.remove('completed');
+
+                // Reset selections
+                selectedTask = null;
+                selectedPaymentMethod = null;
+
+                // Clear UI
+                taskOptions.forEach(opt => {
+                    opt.classList.remove('selected');
+                    opt.querySelector('.selected-badge')?.remove();
+                });
+
+                paymentMethods.forEach(m => m.classList.remove('selected'));
+
+                document.getElementById('paymentAddress').value = '';
+                document.getElementById('notes').value = '';
+                document.getElementById('currency').value = 'kes';
+
+                // Update summary
+                updateSummary();
+
+                // Disable next button
+                btnNext.disabled = true;
+            }
+
+            // Initialize
+            btnNext.disabled = true;
+            btnPay.disabled = true;
+        </script>
+        <script src="validate.js"></script>
+    </body>
+
+</html>

@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Surveys & Tasks System</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            body {
+                display: flex;
+                min-height: 100vh;
+                background-color: #f5f7fa;
+                color: #333;
+            }
+
+            /* Sidebar styling */
+            .sidebar {
+                width: 250px;
+                background: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
+                color: white;
+                padding: 25px 0;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+                z-index: 10;
+            }
+
+            .logo {
+                padding: 0 25px 30px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                margin-bottom: 20px;
+            }
+
+            .logo h1 {
+                font-size: 24px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .logo h1 i {
+                color: #4dabf7;
+            }
+
+            .nav-menu {
+                list-style: none;
+                flex-grow: 1;
+            }
+
+            .nav-menu li {
+                margin-bottom: 5px;
+            }
+
+            .nav-menu a {
+                display: flex;
+                align-items: center;
+                padding: 15px 25px;
+                color: #d0d7e7;
+                text-decoration: none;
+                font-size: 16px;
+                font-weight: 500;
+                transition: all 0.3s;
+                border-left: 4px solid transparent;
+            }
+
+            .nav-menu a:hover {
+                background-color: rgba(255, 255, 255, 0.08);
+                color: white;
+                border-left-color: #4dabf7;
+            }
+
+            .nav-menu a.active {
+                background-color: rgba(77, 171, 247, 0.15);
+                color: white;
+                border-left-color: #4dabf7;
+            }
+
+            .nav-menu i {
+                margin-right: 12px;
+                font-size: 18px;
+                width: 24px;
+                text-align: center;
+            }
+
+            .user-info {
+                padding: 20px 25px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: #4dabf7;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+            }
+
+            .user-details h4 {
+                font-size: 15px;
+                margin-bottom: 4px;
+            }
+
+            .user-details p {
+                font-size: 13px;
+                color: #a0b3d9;
+            }
+
+            /* Main content area */
+            .main-content {
+                flex-grow: 1;
+                padding: 30px;
+                overflow-y: auto;
+            }
+
+            .page-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 30px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid #e1e5eb;
+            }
+
+            .page-header h2 {
+                font-size: 28px;
+                color: #1e3c72;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .page-header h2 i {
+                color: #4dabf7;
+            }
+
+            .notification-bell {
+                position: relative;
+                font-size: 20px;
+                color: #5a6c7d;
+                cursor: pointer;
+            }
+
+            .notification-badge {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background-color: #f03e3e;
+                color: white;
+                font-size: 11px;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Page content styling */
+            .page-content {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                padding: 30px;
+                min-height: 500px;
+            }
+
+            .card-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 25px;
+                margin-top: 25px;
+            }
+
+            .card {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                padding: 25px;
+                transition: transform 0.3s, box-shadow 0.3s;
+                border-top: 4px solid #4dabf7;
+            }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .card h3 {
+                color: #1e3c72;
+                margin-bottom: 15px;
+                font-size: 18px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .card p {
+                color: #5a6c7d;
+                line-height: 1.6;
+                margin-bottom: 20px;
+            }
+
+            .card-stats {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid #e9ecef;
+            }
+
+            .stat-item {
+                text-align: center;
+            }
+
+            .stat-value {
+                font-size: 22px;
+                font-weight: 700;
+                color: #1e3c72;
+            }
+
+            .stat-label {
+                font-size: 13px;
+                color: #868e96;
+                margin-top: 5px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            th {
+                text-align: left;
+                padding: 15px;
+                background-color: #f8f9fa;
+                color: #495057;
+                font-weight: 600;
+                border-bottom: 2px solid #e9ecef;
+            }
+
+            td {
+                padding: 15px;
+                border-bottom: 1px solid #e9ecef;
+                color: #5a6c7d;
+            }
+
+            tr:hover {
+                background-color: #f8f9fa;
+            }
+
+            .status {
+                padding: 5px 12px;
+                border-radius: 20px;
+                font-size: 13px;
+                font-weight: 600;
+            }
+
+            .status-pending {
+                background-color: #fff3cd;
+                color: #856404;
+            }
+
+            .status-completed {
+                background-color: #d4edda;
+                color: #155724;
+            }
+
+            .status-inprogress {
+                background-color: #cce5ff;
+                color: #004085;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: 6px;
+                border: none;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .btn-primary {
+                background-color: #4dabf7;
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background-color: #339af0;
+            }
+
+            .btn-secondary {
+                background-color: #e9ecef;
+                color: #495057;
+            }
+
+            .btn-secondary:hover {
+                background-color: #dee2e6;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 10px;
+                margin-top: 15px;
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 60px 20px;
+                color: #868e96;
+            }
+
+            .empty-state i {
+                font-size: 60px;
+                margin-bottom: 20px;
+                color: #dee2e6;
+            }
+
+            .empty-state h3 {
+                color: #adb5bd;
+                margin-bottom: 10px;
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 992px) {
+                .sidebar {
+                    width: 220px;
+                }
+
+                .card-grid {
+                    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                }
+            }
+
+            @media (max-width: 768px) {
+                body {
+                    flex-direction: column;
+                }
+
+                .sidebar {
+                    width: 100%;
+                    padding: 15px 0;
+                }
+
+                .nav-menu {
+                    display: flex;
+                    overflow-x: auto;
+                    padding: 0 15px;
+                }
+
+                .nav-menu li {
+                    flex-shrink: 0;
+                    margin-bottom: 0;
+                }
+
+                .nav-menu a {
+                    padding: 12px 15px;
+                    border-left: none;
+                    border-bottom: 3px solid transparent;
+                }
+
+                .nav-menu a.active {
+                    border-left: none;
+                    border-bottom-color: #4dabf7;
+                }
+
+                .logo {
+                    padding: 0 15px 15px;
+                }
+
+                .user-info {
+                    display: none;
+                }
+            }
+
+            /* System flow visualization */
+            .flow-diagram {
+                margin: 30px 0;
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-radius: 10px;
+                border: 1px solid #e9ecef;
+            }
+
+            .flow-diagram h3 {
+                color: #495057;
+                margin-bottom: 15px;
+                text-align: center;
+            }
+
+            .flow-steps {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                position: relative;
+            }
+
+            .flow-step {
+                text-align: center;
+                padding: 15px;
+                flex: 1;
+                min-width: 120px;
+                position: relative;
+                z-index: 2;
+            }
+
+            .step-icon {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+                background-color: #4dabf7;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                margin: 0 auto 15px;
+                box-shadow: 0 4px 10px rgba(77, 171, 247, 0.3);
+            }
+
+            .step-label {
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 5px;
+            }
+
+            .step-desc {
+                font-size: 13px;
+                color: #868e96;
+            }
+
+            .flow-connector {
+                position: absolute;
+                top: 30px;
+                left: 15%;
+                right: 15%;
+                height: 2px;
+                background-color: #dee2e6;
+                z-index: 1;
+            }
+
+            @media (max-width: 768px) {
+                .flow-steps {
+                    flex-direction: column;
+                }
+
+                .flow-connector {
+                    display: none;
+                }
+            }
+
+            /* Hidden class for page switching */
+            .hidden {
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1><i class="fas fa-tasks"></i> Surveys & Tasks</h1>
+            </div>
+
+            <ul class="nav-menu">
+                <li><a href="#" id="nav-dashboard" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" id="nav-payments"><i class="fas fa-credit-card"></i> Payments</a></li>
+                <li><a href="#" id="nav-my-bids"><i class="fas fa-gavel"></i> My Bids</a></li>
+                <li><a href="#" id="nav-assigned-tasks"><i class="fas fa-clipboard-list"></i> Assigned Tasks</a></li>
+                <li><a href="#" id="nav-completed"><i class="fas fa-check-circle"></i> Completed</a></li>
+                <li><a href="#" id="nav-support"><i class="fas fa-headset"></i> Support</a></li>
+            </ul>
+
+            <div class="user-info">
+                <div class="user-avatar">JD</div>
+                <div class="user-details">
+                    <h4>John Doe</h4>
+                    <p>Survey Contributor</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Dashboard Page (Default) -->
+            <div id="page-dashboard">
+                <div class="page-header">
+                    <h2><i class="fas fa-home"></i> Dashboard Overview</h2>
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                </div>
+
+                <div class="flow-diagram">
+                    <h3>System Flow</h3>
+                    <div class="flow-steps">
+                        <div class="flow-connector"></div>
+                        <div class="flow-step">
+                            <div class="step-icon"><i class="fas fa-gavel"></i></div>
+                            <div class="step-label">My Bids</div>
+                            <div class="step-desc">Place bids on available surveys</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-icon"><i class="fas fa-clipboard-list"></i></div>
+                            <div class="step-label">Assigned Tasks</div>
+                            <div class="step-desc">Work on assigned surveys</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="step-label">Completed</div>
+                            <div class="step-desc">Submit finished work</div>
+                        </div>
+                        <div class="flow-step">
+                            <div class="step-icon"><i class="fas fa-credit-card"></i></div>
+                            <div class="step-label">Payments</div>
+                            <div class="step-desc">Get paid for completed work</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <h3>Quick Stats</h3>
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3><i class="fas fa-gavel"></i> Active Bids</h3>
+                            <p>You have placed bids on 5 surveys. 2 are pending review, 3 are in consideration.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">5</div>
+                                    <div class="stat-label">Total Bids</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">$245</div>
+                                    <div class="stat-label">Potential Earnings</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-clipboard-list"></i> Assigned Tasks</h3>
+                            <p>You have 3 active tasks to complete. 1 is due in 2 days, 2 are due next week.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">3</div>
+                                    <div class="stat-label">Active Tasks</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">$180</div>
+                                    <div class="stat-label">Pending Payment</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-check-circle"></i> Completed Work</h3>
+                            <p>You've completed 12 surveys this month with a 95% approval rate. Great job!</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">12</div>
+                                    <div class="stat-label">This Month</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">95%</div>
+                                    <div class="stat-label">Approval Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3>Recent Activity</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Activity</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Jun 15, 2023</td>
+                                    <td>Consumer Preferences Survey</td>
+                                    <td><span class="status status-completed">Completed</span></td>
+                                    <td>$25.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Jun 14, 2023</td>
+                                    <td>Tech Product Feedback</td>
+                                    <td><span class="status status-pending">Pending Approval</span></td>
+                                    <td>$30.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Jun 13, 2023</td>
+                                    <td>Market Research Study</td>
+                                    <td><span class="status status-inprogress">In Progress</span></td>
+                                    <td>$45.00</td>
+                                </tr>
+                                <tr>
+                                    <td>Jun 12, 2023</td>
+                                    <td>Bid placed on "Travel Habits Survey"</td>
+                                    <td><span class="status status-pending">Under Review</span></td>
+                                    <td>$20.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Page -->
+            <div id="page-payments" class="hidden">
+                <div class="page-header">
+                    <h2><i class="fas fa-credit-card"></i> Payments</h2>
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">1</span>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <h3>Payment History</h3>
+                    <p>View your completed payments and pending earnings.</p>
+
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3><i class="fas fa-wallet"></i> Total Earnings</h3>
+                            <p>All-time earnings from completed surveys and tasks.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">$1,850</div>
+                                    <div class="stat-label">Total Earned</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">$245</div>
+                                    <div class="stat-label">Pending</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-calendar-alt"></i> This Month</h3>
+                            <p>Earnings and payments for the current month.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">$325</div>
+                                    <div class="stat-label">Earned</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">$180</div>
+                                    <div class="stat-label">Pending</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-clock"></i> Next Payment</h3>
+                            <p>Next scheduled payment date and amount.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">Jun 30</div>
+                                    <div class="stat-label">Payment Date</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">$180</div>
+                                    <div class="stat-label">Amount</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3>Recent Payments</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Method</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Jun 1, 2023</td>
+                                    <td>Monthly Payout</td>
+                                    <td>PayPal</td>
+                                    <td>$280.50</td>
+                                    <td><span class="status status-completed">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>May 15, 2023</td>
+                                    <td>Bonus Payment</td>
+                                    <td>Bank Transfer</td>
+                                    <td>$50.00</td>
+                                    <td><span class="status status-completed">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>May 1, 2023</td>
+                                    <td>Monthly Payout</td>
+                                    <td>PayPal</td>
+                                    <td>$315.75</td>
+                                    <td><span class="status status-completed">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Apr 20, 2023</td>
+                                    <td>Quick Survey Completion</td>
+                                    <td>PayPal</td>
+                                    <td>$25.00</td>
+                                    <td><span class="status status-completed">Completed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary">Request Payment</button>
+                        <button class="btn btn-secondary">View Payment Methods</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Bids Page -->
+            <div id="page-my-bids" class="hidden">
+                <div class="page-header">
+                    <h2><i class="fas fa-gavel"></i> My Bids</h2>
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">2</span>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <h3>Active Bids</h3>
+                    <p>Manage your bids on available surveys and tasks.</p>
+
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3><i class="fas fa-chart-line"></i> Market Research Study</h3>
+                            <p>Comprehensive study on consumer behavior in the tech industry. Requires 45-60 minutes to
+                                complete.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">$45</div>
+                                    <div class="stat-label">Your Bid</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">2 days</div>
+                                    <div class="stat-label">Bid Placed</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <span class="status status-pending">Under Review</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-shopping-cart"></i> E-commerce Feedback</h3>
+                            <p>Share your experience with online shopping platforms. Should take about 30 minutes.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">$30</div>
+                                    <div class="stat-label">Your Bid</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">1 day</div>
+                                    <div class="stat-label">Bid Placed</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <span class="status status-pending">Under Review</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-plane"></i> Travel Habits Survey</h3>
+                            <p>Research on post-pandemic travel preferences. Estimated time: 40 minutes.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">$35</div>
+                                    <div class="stat-label">Your Bid</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">5 days</div>
+                                    <div class="stat-label">Bid Placed</div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 15px;">
+                                <span class="status status-inprogress">In Consideration</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3>Bid History</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Survey Title</th>
+                                    <th>Bid Amount</th>
+                                    <th>Date Submitted</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Health & Wellness Study</td>
+                                    <td>$40</td>
+                                    <td>Jun 10, 2023</td>
+                                    <td><span class="status status-completed">Accepted</span></td>
+                                    <td><button class="btn btn-primary" style="padding: 5px 10px; font-size: 13px;">View
+                                            Task</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Mobile App Usability</td>
+                                    <td>$25</td>
+                                    <td>Jun 5, 2023</td>
+                                    <td><span class="status status-completed">Accepted</span></td>
+                                    <td><button class="btn btn-primary" style="padding: 5px 10px; font-size: 13px;">View
+                                            Task</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Financial Services Feedback</td>
+                                    <td>$50</td>
+                                    <td>May 28, 2023</td>
+                                    <td><span class="status status-pending">Not Selected</span></td>
+                                    <td><button class="btn btn-secondary"
+                                            style="padding: 5px 10px; font-size: 13px;">Bid Again</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assigned Tasks Page -->
+            <div id="page-assigned-tasks" class="hidden">
+                <div class="page-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Assigned Tasks</h2>
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <h3>Your Active Tasks</h3>
+                    <p>These are the surveys and tasks currently assigned to you.</p>
+
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3><i class="fas fa-mobile-alt"></i> Smartphone Usage Survey</h3>
+                            <p>Document your daily smartphone usage patterns for 7 days. 20-30 minutes per day.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">$40</div>
+                                    <div class="stat-label">Payment</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">3 days left</div>
+                                    <div class="stat-label">Deadline</div>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">Start Task</button>
+                                <button class="btn btn-secondary">View Details</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-utensils"></i> Food Delivery Preferences</h3>
+                            <p>Complete a survey about your food ordering habits and preferences.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">$25</div>
+                                    <div class="stat-label">Payment</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">5 days left</div>
+                                    <div class="stat-label">Deadline</div>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">Start Task</button>
+                                <button class="btn btn-secondary">View Details</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-video"></i> Streaming Service Review</h3>
+                            <p>Watch 3 short video clips and provide detailed feedback on content and platform.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">$35</div>
+                                    <div class="stat-label">Payment</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">7 days left</div>
+                                    <div class="stat-label">Deadline</div>
+                                </div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">Start Task</button>
+                                <button class="btn btn-secondary">View Details</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3>Recently Completed Tasks</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Completed Date</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Consumer Preferences Survey</td>
+                                    <td>Jun 15, 2023</td>
+                                    <td><span class="status status-completed">Pending Approval</span></td>
+                                    <td>$25</td>
+                                </tr>
+                                <tr>
+                                    <td>Tech Product Feedback</td>
+                                    <td>Jun 10, 2023</td>
+                                    <td><span class="status status-completed">Approved</span></td>
+                                    <td>$30</td>
+                                </tr>
+                                <tr>
+                                    <td>Market Research Study</td>
+                                    <td>Jun 5, 2023</td>
+                                    <td><span class="status status-completed">Paid</span></td>
+                                    <td>$45</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Page -->
+            <div id="page-completed" class="hidden">
+                <div class="page-header">
+                    <h2><i class="fas fa-check-circle"></i> Completed Tasks</h2>
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <h3>Completed Surveys & Tasks</h3>
+                    <p>View your completed work history and status.</p>
+
+                    <div style="margin-top: 20px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Task Name</th>
+                                    <th>Completion Date</th>
+                                    <th>Time Spent</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Consumer Preferences Survey</td>
+                                    <td>Jun 15, 2023</td>
+                                    <td>42 min</td>
+                                    <td><span class="status status-completed">Pending Approval</span></td>
+                                    <td>$25</td>
+                                    <td>--</td>
+                                </tr>
+                                <tr>
+                                    <td>Tech Product Feedback</td>
+                                    <td>Jun 10, 2023</td>
+                                    <td>35 min</td>
+                                    <td><span class="status status-completed">Approved</span></td>
+                                    <td>$30</td>
+                                    <td>4.8/5</td>
+                                </tr>
+                                <tr>
+                                    <td>Market Research Study</td>
+                                    <td>Jun 5, 2023</td>
+                                    <td>58 min</td>
+                                    <td><span class="status status-completed">Paid</span></td>
+                                    <td>$45</td>
+                                    <td>4.5/5</td>
+                                </tr>
+                                <tr>
+                                    <td>Health & Wellness Study</td>
+                                    <td>May 28, 2023</td>
+                                    <td>50 min</td>
+                                    <td><span class="status status-completed">Paid</span></td>
+                                    <td>$40</td>
+                                    <td>4.7/5</td>
+                                </tr>
+                                <tr>
+                                    <td>Mobile App Usability</td>
+                                    <td>May 20, 2023</td>
+                                    <td>30 min</td>
+                                    <td><span class="status status-completed">Paid</span></td>
+                                    <td>$25</td>
+                                    <td>4.9/5</td>
+                                </tr>
+                                <tr>
+                                    <td>Financial Services Feedback</td>
+                                    <td>May 15, 2023</td>
+                                    <td>45 min</td>
+                                    <td><span class="status status-completed">Paid</span></td>
+                                    <td>$35</td>
+                                    <td>4.6/5</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="card-grid" style="margin-top: 30px;">
+                        <div class="card">
+                            <h3><i class="fas fa-chart-bar"></i> Completion Stats</h3>
+                            <p>Your overall completion statistics and performance metrics.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">42</div>
+                                    <div class="stat-label">Total Completed</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">96%</div>
+                                    <div class="stat-label">Approval Rate</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-star"></i> Quality Rating</h3>
+                            <p>Average rating from task providers based on quality of your work.</p>
+                            <div class="card-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value">4.7</div>
+                                    <div class="stat-label">Avg. Rating</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value">38</div>
+                                    <div class="stat-label">Reviews</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Page -->
+            <div id="page-support" class="hidden">
+                <div class="page-header">
+                    <h2><i class="fas fa-headset"></i> Support</h2>
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                </div>
+
+                <div class="page-content">
+                    <h3>Get Help & Support</h3>
+                    <p>Find answers to common questions or contact our support team.</p>
+
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3><i class="fas fa-question-circle"></i> Frequently Asked Questions</h3>
+                            <p>Find quick answers to common questions about bidding, payments, and task completion.</p>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">View FAQ</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-envelope"></i> Contact Support</h3>
+                            <p>Send a message to our support team. We typically respond within 24 hours.</p>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">Open Ticket</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-file-alt"></i> Documentation</h3>
+                            <p>Access guides and tutorials on how to use the platform effectively.</p>
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">View Guides</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px;">
+                        <h3>Recent Support Tickets</h3>
+
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <h3>No Active Support Tickets</h3>
+                            <p>You don't have any open support requests at this time.</p>
+                            <button class="btn btn-primary" style="margin-top: 15px;">Create New Ticket</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 30px; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
+                        <h3>Contact Information</h3>
+                        <p><i class="fas fa-envelope" style="margin-right: 10px; color: #4dabf7;"></i> Email:
+                            support@surveys-tasks.com</p>
+                        <p><i class="fas fa-phone" style="margin-right: 10px; color: #4dabf7;"></i> Phone: +1 (800)
+                            123-4567</p>
+                        <p><i class="fas fa-clock" style="margin-right: 10px; color: #4dabf7;"></i> Hours: Mon-Fri,
+                            9am-6pm EST</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Page navigation functionality
+            document.addEventListener('DOMContentLoaded', function () {
+                // Get all navigation links
+                const navLinks = document.querySelectorAll('.nav-menu a');
+
+                // Get all pages
+                const pages = document.querySelectorAll('.main-content > div');
+
+                // Function to switch pages
+                function switchPage(pageId) {
+                    // Hide all pages
+                    pages.forEach(page => {
+                        page.classList.add('hidden');
+                    });
+
+                    // Show selected page
+                    document.getElementById(pageId).classList.remove('hidden');
+
+                    // Update active navigation link
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.id === `nav-${pageId.replace('page-', '')}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+
+                // Add click event listeners to navigation links
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        const pageId = this.id.replace('nav-', 'page-');
+                        switchPage(pageId);
+                    });
+                });
+
+                // Initialize with dashboard page
+                switchPage('page-dashboard');
+
+                // Add functionality to buttons
+                const buttons = document.querySelectorAll('.btn');
+                buttons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        if (this.textContent.includes('Start Task')) {
+                            alert('Task started! You will be redirected to the survey.');
+                        } else if (this.textContent.includes('Request Payment')) {
+                            alert('Payment request submitted! You will receive your funds within 3-5 business days.');
+                        } else if (this.textContent.includes('Open Ticket') || this.textContent.includes('Create New Ticket')) {
+                            alert('Support ticket form would open here.');
+                        }
+                    });
+                });
+            });
+        </script>
+        <script src="validate.js"></script>
+    </body>
+
+</html>

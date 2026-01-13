@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin - Bids Management</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            /* All the same styles as above plus additional specific styles */
+            /* I'll include only the additional specific styles to save space */
+
+            /* Bids specific styles */
+            .filter-tabs {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                padding-bottom: 10px;
+            }
+
+            .filter-tab {
+                padding: 10px 20px;
+                border-radius: 20px;
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--muted-text);
+                border: none;
+                cursor: pointer;
+                transition: all 0.3s;
+            }
+
+            .filter-tab.active {
+                background: var(--gradient-primary);
+                color: white;
+            }
+
+            .filter-tab:hover:not(.active) {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .bid-status {
+                padding: 5px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+            }
+
+            .status-pending {
+                background: rgba(255, 165, 2, 0.2);
+                color: #ffa502;
+            }
+
+            .status-approved {
+                background: rgba(46, 213, 115, 0.2);
+                color: #2ed573;
+            }
+
+            .status-rejected {
+                background: rgba(255, 71, 87, 0.2);
+                color: #ff4757;
+            }
+
+            .status-completed {
+                background: rgba(0, 255, 255, 0.2);
+                color: var(--neon-blue);
+            }
+
+            .bid-actions {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .action-btn-sm {
+                padding: 5px 10px;
+                border-radius: 6px;
+                font-size: 12px;
+                cursor: pointer;
+                border: none;
+                transition: all 0.3s;
+            }
+
+            .approve-btn {
+                background: rgba(46, 213, 115, 0.2);
+                color: #2ed573;
+            }
+
+            .reject-btn {
+                background: rgba(255, 71, 87, 0.2);
+                color: #ff4757;
+            }
+
+            .view-btn {
+                background: rgba(0, 255, 255, 0.2);
+                color: var(--neon-blue);
+            }
+
+            /* Bid details modal styles */
+            .modal-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            }
+
+            .modal-content {
+                background: var(--card-bg);
+                border-radius: 15px;
+                padding: 30px;
+                width: 90%;
+                max-width: 800px;
+                max-height: 80vh;
+                overflow-y: auto;
+                border: 1px solid rgba(138, 43, 226, 0.3);
+                box-shadow: var(--glow-purple);
+            }
+
+            .modal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .close-modal {
+                background: none;
+                border: none;
+                color: var(--muted-text);
+                font-size: 24px;
+                cursor: pointer;
+            }
+
+            .bid-details-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .detail-card {
+                background: rgba(0, 0, 0, 0.2);
+                padding: 20px;
+                border-radius: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Neon Background -->
+        <div class="neon-background">
+            <div class="neon-grid"></div>
+        </div>
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <a href="mainpage.html" class="brand">
+                <i class="fas fa-feather"></i> Neon Writers
+            </a>
+
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Admin Panel</div>
+                    <div class="user-balance" id="userBalance">Admin</div>
+                </div>
+                <a href="index.html" class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <ul class="nav-menu">
+                    <li><a href="mainpage.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="admin-upload.html"><i class="fas fa-upload"></i> Upload Tasks</a></li>
+                    <li><a href="admin-users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="admin-bids.html" class="active"><i class="fas fa-gavel"></i> Bids Management</a></li>
+                    <li><a href="admin-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="admin-reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                    <li><a href="admin-settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="page-header">
+                    <h2><i class="fas fa-gavel"></i> Bids Management</h2>
+                    <div style="font-size: 16px; color: var(--muted-text);">
+                        Review, approve, and manage all bids
+                    </div>
+                </div>
+
+                <!-- Bids Statistics -->
+                <div class="admin-stats">
+                    <div class="stat-badge">
+                        <div class="stat-icon">
+                            <i class="fas fa-hand-paper"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h4>Total Bids</h4>
+                            <div class="value" id="totalBids">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-badge">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h4>Pending Review</h4>
+                            <div class="value" id="pendingBids">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-badge">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h4>Approved</h4>
+                            <div class="value" id="approvedBids">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-badge">
+                        <div class="stat-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h4>Rejected</h4>
+                            <div class="value" id="rejectedBids">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="filter-tabs" id="filterTabs">
+                    <button class="filter-tab active" data-filter="all">All Bids</button>
+                    <button class="filter-tab" data-filter="pending">Pending Review</button>
+                    <button class="filter-tab" data-filter="approved">Approved</button>
+                    <button class="filter-tab" data-filter="rejected">Rejected</button>
+                    <button class="filter-tab" data-filter="completed">Completed</button>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="search-section">
+                    <div class="search-row">
+                        <div class="search-group">
+                            <label>Search Bids</label>
+                            <input type="text" class="search-input" id="searchInput"
+                                placeholder="Search by task or writer...">
+                        </div>
+                        <div class="search-group">
+                            <label>Date Range</label>
+                            <select class="search-input" id="dateFilter">
+                                <option value="all">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="searchBtn">
+                            <i class="fas fa-search"></i> Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bids Table -->
+                <div class="users-table-container">
+                    <div class="table-header">
+                        <h3 style="color: var(--light-text);">All Bids</h3>
+                        <button class="btn btn-secondary" id="bulkActionBtn">
+                            <i class="fas fa-tasks"></i> Bulk Actions
+                        </button>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Bid ID</th>
+                                <th>Task</th>
+                                <th>Writer</th>
+                                <th>Bid Amount</th>
+                                <th>Submitted</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bidsTableBody">
+                            <!-- Bids will be populated here -->
+                        </tbody>
+                    </table>
+
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bid Details Modal -->
+        <div class="modal-overlay" id="bidModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Bid Details</h3>
+                    <button class="close-modal" id="closeModal">&times;</button>
+                </div>
+                <div id="modalContent">
+                    <!-- Modal content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                checkAdminAuth();
+                loadBids();
+
+                // Setup event listeners
+                document.querySelectorAll('.filter-tab').forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        loadBids();
+                    });
+                });
+
+                document.getElementById('searchBtn').addEventListener('click', loadBids);
+                document.getElementById('bulkActionBtn').addEventListener('click', showBulkActions);
+                document.getElementById('closeModal').addEventListener('click', closeModal);
+                document.getElementById('logoutBtn').addEventListener('click', logout);
+
+                // Close modal when clicking outside
+                document.getElementById('bidModal').addEventListener('click', function (e) {
+                    if (e.target === this) closeModal();
+                });
+            });
+
+            function checkAdminAuth() {
+                const isLoggedIn = localStorage.getItem('neon_writers_logged_in') === 'true';
+                if (!isLoggedIn) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const userData = JSON.parse(localStorage.getItem('neon_writers_user') || '{}');
+                const isAdmin = userData.email && (userData.email.includes('admin') || userData.isAdmin === true);
+
+                if (!isAdmin) {
+                    alert('Access Denied: Admin privileges required');
+                    window.location.href = 'mainpage.html';
+                    return;
+                }
+
+                document.getElementById('userName').textContent = `Admin: ${userData.firstName || 'Administrator'}`;
+            }
+
+            function loadBids() {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const dateFilter = document.getElementById('dateFilter').value;
+                const activeFilter = document.querySelector('.filter-tab.active').dataset.filter;
+
+                let bids = JSON.parse(localStorage.getItem('neon_writers_user_bids') || '[]');
+
+                if (bids.length === 0) {
+                    bids = generateDemoBids();
+                    localStorage.setItem('neon_writers_user_bids', JSON.stringify(bids));
+                }
+
+                // Apply filters
+                let filteredBids = bids.filter(bid => {
+                    const matchesSearch = !searchTerm ||
+                        bid.taskTitle.toLowerCase().includes(searchTerm) ||
+                        bid.writerName.toLowerCase().includes(searchTerm);
+
+                    const matchesFilter = activeFilter === 'all' || bid.status === activeFilter;
+
+                    let matchesDate = true;
+                    if (dateFilter !== 'all') {
+                        const bidDate = new Date(bid.submittedDate);
+                        const now = new Date();
+
+                        switch (dateFilter) {
+                            case 'today':
+                                matchesDate = bidDate.toDateString() === now.toDateString();
+                                break;
+                            case 'week':
+                                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                                matchesDate = bidDate >= weekAgo;
+                                break;
+                            case 'month':
+                                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                                matchesDate = bidDate >= monthAgo;
+                                break;
+                        }
+                    }
+
+                    return matchesSearch && matchesFilter && matchesDate;
+                });
+
+                updateBidStats(bids);
+                displayBids(filteredBids);
+            }
+
+            function generateDemoBids() {
+                const tasks = ['Blog Post about AI', 'Research Paper on Climate', 'Website Content',
+                    'Technical Documentation', 'Social Media Campaign', 'E-book Chapter'];
+                const writers = ['Alex Johnson', 'Jamie Smith', 'Taylor Brown', 'Morgan Davis', 'Casey Wilson'];
+                const statuses = ['pending', 'approved', 'rejected', 'completed'];
+
+                const bids = [];
+
+                for (let i = 1; i <= 50; i++) {
+                    const status = statuses[Math.floor(Math.random() * statuses.length)];
+                    bids.push({
+                        id: `BID${String(i).padStart(4, '0')}`,
+                        taskId: Math.floor(Math.random() * 1000),
+                        taskTitle: tasks[Math.floor(Math.random() * tasks.length)],
+                        writerId: Math.floor(Math.random() * 100),
+                        writerName: writers[Math.floor(Math.random() * writers.length)],
+                        bidAmount: (Math.random() * 100 + 20).toFixed(2),
+                        submittedDate: new Date(Date.now() - Math.random() * 2592000000).toISOString(), // Last 30 days
+                        status: status,
+                        message: `I have extensive experience in this field and can deliver high-quality work within the deadline.`,
+                        estimatedDays: Math.floor(Math.random() * 10) + 1
+                    });
+                }
+
+                return bids;
+            }
+
+            function updateBidStats(bids) {
+                const totalBids = bids.length;
+                const pendingBids = bids.filter(b => b.status === 'pending').length;
+                const approvedBids = bids.filter(b => b.status === 'approved').length;
+                const rejectedBids = bids.filter(b => b.status === 'rejected').length;
+
+                document.getElementById('totalBids').textContent = totalBids;
+                document.getElementById('pendingBids').textContent = pendingBids;
+                document.getElementById('approvedBids').textContent = approvedBids;
+                document.getElementById('rejectedBids').textContent = rejectedBids;
+            }
+
+            function displayBids(bids) {
+                const tbody = document.getElementById('bidsTableBody');
+
+                if (bids.length === 0) {
+                    tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px; color: var(--muted-text);">
+                            <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>
+                            No bids found matching your criteria
+                        </td>
+                    </tr>
+                `;
+                    return;
+                }
+
+                let html = '';
+                bids.forEach(bid => {
+                    const submittedDate = new Date(bid.submittedDate).toLocaleDateString();
+
+                    html += `
+                    <tr>
+                        <td><strong>${bid.id}</strong></td>
+                        <td>
+                            <div class="task-title">${bid.taskTitle}</div>
+                            <div style="font-size: 12px; color: var(--muted-text);">ID: ${bid.taskId}</div>
+                        </td>
+                        <td>${bid.writerName}</td>
+                        <td>$${bid.bidAmount}</td>
+                        <td>${submittedDate}</td>
+                        <td><span class="bid-status status-${bid.status}">${bid.status.toUpperCase()}</span></td>
+                        <td>
+                            <div class="bid-actions">
+                                <button class="action-btn-sm view-btn" onclick="viewBidDetails('${bid.id}')">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                ${bid.status === 'pending' ? `
+                                <button class="action-btn-sm approve-btn" onclick="approveBid('${bid.id}')">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="action-btn-sm reject-btn" onclick="rejectBid('${bid.id}')">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                });
+
+                tbody.innerHTML = html;
+            }
+
+            function viewBidDetails(bidId) {
+                const bids = JSON.parse(localStorage.getItem('neon_writers_user_bids') || '[]');
+                const bid = bids.find(b => b.id === bidId);
+
+                if (!bid) {
+                    alert('Bid not found');
+                    return;
+                }
+
+                const modalContent = document.getElementById('modalContent');
+                modalContent.innerHTML = `
+                <div class="bid-details-grid">
+                    <div class="detail-card">
+                        <h4>Bid Information</h4>
+                        <p><strong>Bid ID:</strong> ${bid.id}</p>
+                        <p><strong>Task:</strong> ${bid.taskTitle}</p>
+                        <p><strong>Task ID:</strong> ${bid.taskId}</p>
+                        <p><strong>Bid Amount:</strong> $${bid.bidAmount}</p>
+                        <p><strong>Estimated Days:</strong> ${bid.estimatedDays} days</p>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <h4>Writer Information</h4>
+                        <p><strong>Writer:</strong> ${bid.writerName}</p>
+                        <p><strong>Writer ID:</strong> ${bid.writerId}</p>
+                        <p><strong>Status:</strong> <span class="bid-status status-${bid.status}">${bid.status.toUpperCase()}</span></p>
+                        <p><strong>Submitted:</strong> ${new Date(bid.submittedDate).toLocaleString()}</p>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>Writer's Message</h4>
+                    <p>${bid.message}</p>
+                </div>
+                
+                ${bid.status === 'pending' ? `
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <button class="btn btn-primary" onclick="approveBid('${bid.id}')">
+                        <i class="fas fa-check"></i> Approve Bid
+                    </button>
+                    <button class="btn btn-danger" onclick="rejectBid('${bid.id}')">
+                        <i class="fas fa-times"></i> Reject Bid
+                    </button>
+                </div>
+                ` : ''}
+            `;
+
+                document.getElementById('bidModal').style.display = 'flex';
+            }
+
+            function approveBid(bidId) {
+                if (confirm('Approve this bid?')) {
+                    let bids = JSON.parse(localStorage.getItem('neon_writers_user_bids') || '[]');
+                    bids = bids.map(bid => {
+                        if (bid.id === bidId) {
+                            return { ...bid, status: 'approved' };
+                        }
+                        return bid;
+                    });
+
+                    localStorage.setItem('neon_writers_user_bids', JSON.stringify(bids));
+                    loadBids();
+                    closeModal();
+                    alert('Bid approved successfully!');
+                }
+            }
+
+            function rejectBid(bidId) {
+                if (confirm('Reject this bid?')) {
+                    let bids = JSON.parse(localStorage.getItem('neon_writers_user_bids') || '[]');
+                    bids = bids.map(bid => {
+                        if (bid.id === bidId) {
+                            return { ...bid, status: 'rejected' };
+                        }
+                        return bid;
+                    });
+
+                    localStorage.setItem('neon_writers_user_bids', JSON.stringify(bids));
+                    loadBids();
+                    closeModal();
+                    alert('Bid rejected.');
+                }
+            }
+
+            function showBulkActions() {
+                alert('Bulk actions would open here for mass approval/rejection');
+            }
+
+            function closeModal() {
+                document.getElementById('bidModal').style.display = 'none';
+            }
+
+            function logout() {
+                localStorage.removeItem('neon_writers_logged_in');
+                window.location.href = 'index.html';
+            }
+        </script>
+    </body>
+
+</html>

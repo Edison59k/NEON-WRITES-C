@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Neon Writers - Home</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            :root {
+                --neon-purple: #8a2be2;
+                --neon-pink: #ff00ff;
+                --neon-blue: #00ffff;
+                --neon-green: #39ff14;
+                --dark-bg: #0a0a1a;
+                --darker-bg: #050510;
+                --card-bg: rgba(20, 20, 40, 0.8);
+                --light-text: #ffffff;
+                --muted-text: #b0b0d0;
+                --gradient-primary: linear-gradient(135deg, #8a2be2, #ff00ff);
+                --gradient-secondary: linear-gradient(135deg, #00ffff, #39ff14);
+                --glow-purple: 0 0 15px rgba(138, 43, 226, 0.7);
+                --error-color: #ff4757;
+                --success-color: #2ed573;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            body {
+                background: var(--dark-bg);
+                color: var(--light-text);
+                min-height: 100vh;
+                overflow-x: hidden;
+            }
+
+            /* Neon Background */
+            .neon-background {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                overflow: hidden;
+            }
+
+            .neon-grid {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image:
+                    linear-gradient(rgba(138, 43, 226, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(138, 43, 226, 0.1) 1px, transparent 1px);
+                background-size: 50px 50px;
+            }
+
+            /* Navbar */
+            .navbar {
+                background: rgba(10, 10, 26, 0.9);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+                padding: 20px 40px;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                box-shadow: var(--glow-purple);
+            }
+
+            .nav-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav-logo {
+                font-size: 1.8rem;
+                font-weight: 700;
+                background: var(--gradient-primary);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+            }
+
+            .nav-logo i {
+                font-size: 2rem;
+            }
+
+            .nav-menu {
+                display: flex;
+                list-style: none;
+                gap: 30px;
+                align-items: center;
+            }
+
+            .nav-menu a {
+                color: var(--light-text);
+                text-decoration: none;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                position: relative;
+                padding: 5px 0;
+            }
+
+            .nav-menu a:hover {
+                color: var(--neon-blue);
+            }
+
+            .nav-menu a::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: var(--gradient-primary);
+                transition: width 0.3s ease;
+            }
+
+            .nav-menu a:hover::after {
+                width: 100%;
+            }
+
+            .auth-buttons {
+                display: flex;
+                gap: 15px;
+            }
+
+            .login-btn,
+            .signup-btn {
+                padding: 10px 25px;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .login-btn {
+                background: transparent;
+                color: var(--light-text);
+                border: 2px solid var(--neon-blue);
+            }
+
+            .login-btn:hover {
+                background: rgba(0, 255, 255, 0.1);
+                transform: translateY(-3px);
+                box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+            }
+
+            .signup-btn {
+                background: var(--gradient-primary);
+                color: white;
+                box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+            }
+
+            .signup-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(138, 43, 226, 0.6);
+            }
+
+            /* Hero Section */
+            .hero {
+                padding: 100px 40px;
+                text-align: center;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .hero h1 {
+                font-size: 4rem;
+                font-weight: 800;
+                margin-bottom: 20px;
+                background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                text-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+            }
+
+            .hero p {
+                font-size: 1.4rem;
+                color: var(--muted-text);
+                margin-bottom: 40px;
+                max-width: 800px;
+                margin-left: auto;
+                margin-right: auto;
+                line-height: 1.6;
+            }
+
+            .cta-buttons {
+                display: flex;
+                gap: 20px;
+                justify-content: center;
+                margin-top: 40px;
+            }
+
+            .cta-primary,
+            .cta-secondary {
+                padding: 18px 40px;
+                font-size: 1.2rem;
+                font-weight: 600;
+                border-radius: 50px;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .cta-primary {
+                background: var(--gradient-primary);
+                color: white;
+                box-shadow: 0 8px 25px rgba(138, 43, 226, 0.5);
+            }
+
+            .cta-primary:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(138, 43, 226, 0.7);
+            }
+
+            .cta-secondary {
+                background: transparent;
+                color: var(--light-text);
+                border: 2px solid var(--neon-blue);
+            }
+
+            .cta-secondary:hover {
+                background: rgba(0, 255, 255, 0.1);
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0, 255, 255, 0.3);
+            }
+
+            /* Signup Modal */
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 1000;
+                overflow-y: auto;
+            }
+
+            .modal-content {
+                background: var(--card-bg);
+                margin: 50px auto;
+                width: 90%;
+                max-width: 500px;
+                border-radius: 20px;
+                border: 1px solid var(--neon-purple);
+                box-shadow: var(--glow-purple);
+                overflow: hidden;
+            }
+
+            .modal-header {
+                padding: 25px;
+                background: rgba(138, 43, 226, 0.2);
+                border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .modal-header h2 {
+                color: var(--light-text);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .close-modal {
+                background: none;
+                border: none;
+                color: var(--muted-text);
+                font-size: 24px;
+                cursor: pointer;
+                transition: color 0.3s;
+            }
+
+            .close-modal:hover {
+                color: var(--neon-pink);
+            }
+
+            .modal-body {
+                padding: 30px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--light-text);
+                font-weight: 500;
+            }
+
+            .form-control {
+                width: 100%;
+                padding: 12px 15px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 10px;
+                color: var(--light-text);
+                font-size: 16px;
+                transition: all 0.3s;
+            }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--neon-blue);
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+            }
+
+            .form-control.error {
+                border-color: var(--error-color);
+                box-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
+            }
+
+            .form-control.success {
+                border-color: var(--success-color);
+                box-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+            }
+
+            .error-message {
+                color: var(--error-color);
+                font-size: 14px;
+                margin-top: 5px;
+                display: none;
+            }
+
+            .error-message.show {
+                display: block;
+            }
+
+            .form-hint {
+                color: var(--muted-text);
+                font-size: 14px;
+                margin-top: 5px;
+            }
+
+            .form-actions {
+                display: flex;
+                gap: 15px;
+                margin-top: 30px;
+            }
+
+            .btn {
+                padding: 15px 30px;
+                border-radius: 10px;
+                border: none;
+                font-size: 16px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+                flex: 1;
+                justify-content: center;
+            }
+
+            .btn-primary {
+                background: var(--gradient-primary);
+                color: white;
+                box-shadow: 0 4px 20px rgba(138, 43, 226, 0.4);
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(138, 43, 226, 0.6);
+            }
+
+            .btn-primary:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+            }
+
+            .btn-secondary {
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--light-text);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .btn-secondary:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-3px);
+            }
+
+            /* Features Section */
+            .features {
+                padding: 80px 40px;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+
+            .section-title {
+                text-align: center;
+                font-size: 2.5rem;
+                margin-bottom: 50px;
+                color: var(--light-text);
+            }
+
+            .features-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 30px;
+            }
+
+            .feature-card {
+                background: var(--card-bg);
+                backdrop-filter: blur(10px);
+                border-radius: 20px;
+                padding: 40px 30px;
+                border: 1px solid rgba(138, 43, 226, 0.3);
+                transition: all 0.3s ease;
+                text-align: center;
+            }
+
+            .feature-card:hover {
+                transform: translateY(-10px);
+                border-color: var(--neon-purple);
+                box-shadow: var(--glow-purple);
+            }
+
+            .feature-icon {
+                font-size: 3rem;
+                margin-bottom: 20px;
+                color: var(--neon-purple);
+            }
+
+            .feature-card h3 {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+                color: var(--light-text);
+            }
+
+            .feature-card p {
+                color: var(--muted-text);
+                line-height: 1.6;
+            }
+
+            /* Footer */
+            .footer {
+                background: rgba(10, 10, 26, 0.9);
+                padding: 60px 40px;
+                border-top: 1px solid rgba(138, 43, 226, 0.3);
+                margin-top: 80px;
+            }
+
+            .footer-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 40px;
+            }
+
+            .footer-logo {
+                font-size: 1.8rem;
+                font-weight: 700;
+                background: var(--gradient-primary);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .footer-links h4 {
+                margin-bottom: 20px;
+                color: var(--light-text);
+            }
+
+            .footer-links ul {
+                list-style: none;
+            }
+
+            .footer-links li {
+                margin-bottom: 10px;
+            }
+
+            .footer-links a {
+                color: var(--muted-text);
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+            .footer-links a:hover {
+                color: var(--neon-blue);
+            }
+
+            .copyright {
+                text-align: center;
+                padding-top: 40px;
+                margin-top: 40px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                color: var(--muted-text);
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .navbar {
+                    padding: 15px 20px;
+                }
+
+                .nav-menu {
+                    display: none;
+                }
+
+                .hero h1 {
+                    font-size: 2.5rem;
+                }
+
+                .hero p {
+                    font-size: 1.1rem;
+                }
+
+                .cta-buttons {
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .auth-buttons {
+                    display: none;
+                }
+
+                .modal-content {
+                    margin: 20px auto;
+                    width: 95%;
+                }
+
+                .form-actions {
+                    flex-direction: column;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .hero {
+                    padding: 60px 20px;
+                }
+
+                .features {
+                    padding: 40px 20px;
+                }
+
+                .section-title {
+                    font-size: 2rem;
+                }
+
+                .feature-card {
+                    padding: 30px 20px;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Neon Background -->
+        <div class="neon-background">
+            <div class="neon-grid"></div>
+        </div>
+
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="index.html" class="nav-logo">
+                    <i class="fas fa-feather"></i> Neon Writers
+                </a>
+
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+
+                <div class="auth-buttons">
+                    <a href="#" class="login-btn" id="loginBtn">Log In</a>
+                    <a href="#" class="signup-btn" id="signupBtn">Sign Up</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Write. Earn. Shine.</h1>
+            <p>Join Kenya's premier platform for freelance writers. Get paid for your creativity with secure payments,
+                exciting opportunities, and a supportive community. <br>
+                <br>
+                Kindly use your laptop to ensure proper flow of working.
+            </p>
+
+            <div class="cta-buttons">
+                <a href="#" class="cta-primary" id="ctaSignup">
+                    <i class="fas fa-rocket"></i> Start Earning Now
+                </a>
+                <a href="#how-it-works" class="cta-secondary">
+                    <i class="fas fa-play-circle"></i> How It Works
+                </a>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <h2 class="section-title">Why Choose Neon Writers?</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3>Instant Payments</h3>
+                    <p>Get paid directly to your M-Pesa within 24 hours. No delays, no hidden fees, no registration
+                        fees.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3>Variety of Opportunities</h3>
+                    <p>From surveys to content writing, find work that matches your skills and interests. Start earning
+                        immediately after signup.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure Platform</h3>
+                    <p>Your data and payments are protected with industry-leading security measures. Your privacy is our
+                        priority.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="features"
+            style="background: rgba(138, 43, 226, 0.05); border-radius: 20px; margin: 40px;">
+            <h2 class="section-title">How It Works</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span
+                            style="background: var(--gradient-primary); color: white; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; margin: 0 auto 20px;">1</span>
+                    </div>
+                    <h3>Free Sign Up</h3>
+                    <p>Create your account completely free. Start immediately!
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span
+                            style="background: var(--gradient-primary); color: white; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; margin: 0 auto 20px;">2</span>
+                    </div>
+                    <h3>Browse & Bid</h3>
+                    <p>Explore available surveys and writing tasks. Bid on projects that match your skills and
+                        interests.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <span
+                            style="background: var(--gradient-primary); color: white; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 1.5rem; margin: 0 auto 20px;">3</span>
+                    </div>
+                    <h3>Complete & Earn</h3>
+                    <p>Submit your work and get paid directly to your M-Pesa. Withdraw anytime with zero fees.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer id="contact" class="footer">
+            <div class="footer-content">
+                <div>
+                    <div class="footer-logo">
+                        <i class="fas fa-feather"></i> Neon Writers
+                    </div>
+                    <p style="color: var(--muted-text); line-height: 1.6;">
+                        Empowering Kenyan writers to earn from their skills. Join our community today - completely free!
+                    </p>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Get Started</h4>
+                    <ul>
+                        <li><a href="#" id="footerSignup">Sign Up Free</a></li>
+                        <li><a href="#" id="footerLogin">Log In</a></li>
+                        <li><a href="mainpage.html">Dashboard</a></li>
+                        <li><a href="surveys.html">Available Surveys</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-links">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="support.html">Help Center</a></li>
+                        <li><a href="mailto:support@neonwriters.co.ke">Email Support</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2024 Neon Writers. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <!-- Signup Modal -->
+        <div id="signupModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-user-plus"></i> Create Your Free Account</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="signupForm">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" class="form-control" placeholder="Enter your first name"
+                                required>
+                            <div class="error-message" id="firstNameError">First name is required</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" class="form-control" placeholder="Enter your last name"
+                                required>
+                            <div class="error-message" id="lastNameError">Last name is required</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" class="form-control" placeholder="your.email@example.com"
+                                required>
+                            <div class="error-message" id="emailError">Please enter a valid email address</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" class="form-control"
+                                placeholder="07XX XXX XXX or 2547XX XXX XXX" required>
+                            <div class="error-message" id="phoneError">Enter a valid Kenyan phone number (10 digits
+                                without 254 or 13 digits with 254)</div>
+                            <div class="form-hint">Format: 0712345678 (10 digits) or 254712345678 (13 digits)</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password *</label>
+                            <input type="password" id="password" class="form-control"
+                                placeholder="Create a strong password" required>
+                            <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password *</label>
+                            <input type="password" id="confirmPassword" class="form-control"
+                                placeholder="Confirm your password" required>
+                            <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="fas fa-user-plus"></i> Create Free Account
+                            </button>
+                            <button type="button" class="btn btn-secondary close-modal">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 20px; color: var(--muted-text);">
+                            Already have an account? <a href="#" id="showLogin"
+                                style="color: var(--neon-blue); text-decoration: none;">Log In</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Modal -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-sign-in-alt"></i> Log In to Your Account</h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address *</label>
+                            <input type="email" id="loginEmail" class="form-control"
+                                placeholder="your.email@example.com" required>
+                            <div class="error-message" id="loginEmailError">Please enter a valid email address</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loginPassword">Password *</label>
+                            <input type="password" id="loginPassword" class="form-control"
+                                placeholder="Enter your password" required>
+                            <div class="error-message" id="loginPasswordError">Password is required</div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> Log In
+                            </button>
+                            <button type="button" class="btn btn-secondary close-modal">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        </div>
+
+                        <div style="text-align: center; margin-top: 20px; color: var(--muted-text);">
+                            Don't have an account? <a href="#" id="showSignup"
+                                style="color: var(--neon-blue); text-decoration: none;">Sign Up Free</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Validation functions
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            function validatePhone(phone) {
+                // Remove all non-digit characters
+                const cleaned = phone.replace(/\D/g, '');
+
+                // Check if it's 10 digits (without 254) and starts with 07
+                if (cleaned.length === 10 && cleaned.startsWith('07')) {
+                    return { valid: true, formatted: cleaned };
+                }
+
+                // Check if it's 13 digits (with 254) and starts with 2547
+                if (cleaned.length === 13 && cleaned.startsWith('2547')) {
+                    return { valid: true, formatted: cleaned };
+                }
+
+                return { valid: false, formatted: null };
+            }
+
+            function validatePassword(password) {
+                return password.length >= 8;
+            }
+
+            // Modal management
+            document.addEventListener('DOMContentLoaded', function () {
+                const signupModal = document.getElementById('signupModal');
+                const loginModal = document.getElementById('loginModal');
+                const closeModalBtns = document.querySelectorAll('.close-modal');
+                const showSignupLinks = document.querySelectorAll('#showSignup, #signupBtn, #ctaSignup, #footerSignup');
+                const showLoginLinks = document.querySelectorAll('#showLogin, #loginBtn, #footerLogin');
+
+                // Show signup modal
+                showSignupLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        loginModal.style.display = 'none';
+                        signupModal.style.display = 'block';
+                        document.body.style.overflow = 'hidden';
+                    });
+                });
+
+                // Show login modal
+                showLoginLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        signupModal.style.display = 'none';
+                        loginModal.style.display = 'block';
+                        document.body.style.overflow = 'hidden';
+                    });
+                });
+
+                // Close modals
+                closeModalBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        signupModal.style.display = 'none';
+                        loginModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    });
+                });
+
+                // Close modals when clicking outside
+                window.addEventListener('click', (e) => {
+                    if (e.target === signupModal) {
+                        signupModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                    if (e.target === loginModal) {
+                        loginModal.style.display = 'none';
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+
+                // Check if user is already logged in
+                const isLoggedIn = localStorage.getItem('neon_writers_logged_in') === 'true';
+                if (isLoggedIn) {
+                    // Update navigation for logged-in users
+                    const loginBtn = document.getElementById('loginBtn');
+                    const signupBtn = document.getElementById('signupBtn');
+                    const ctaSignup = document.getElementById('ctaSignup');
+                    const footerSignup = document.getElementById('footerSignup');
+                    const footerLogin = document.getElementById('footerLogin');
+
+                    const currentUser = JSON.parse(localStorage.getItem('neon_writers_current_user') || '{}');
+                    const userName = currentUser.firstName ? currentUser.firstName : 'User';
+
+                    if (loginBtn) {
+                        loginBtn.textContent = `Dashboard (${userName})`;
+                        loginBtn.href = 'mainpage.html';
+                        loginBtn.classList.remove('login-btn');
+                        loginBtn.classList.add('signup-btn');
+                    }
+
+                    if (signupBtn) {
+                        signupBtn.textContent = 'Profile';
+                        signupBtn.href = 'profile.html';
+                    }
+
+                    if (ctaSignup) {
+                        ctaSignup.innerHTML = '<i class="fas fa-tachometer-alt"></i> Go to Dashboard';
+                        ctaSignup.href = 'mainpage.html';
+                    }
+
+                    if (footerSignup) {
+                        footerSignup.textContent = 'Dashboard';
+                        footerSignup.href = 'mainpage.html';
+                    }
+
+                    if (footerLogin) {
+                        footerLogin.textContent = 'Profile';
+                        footerLogin.href = 'profile.html';
+                    }
+                }
+
+                // Signup form validation and submission
+                const signupForm = document.getElementById('signupForm');
+                const submitBtn = document.getElementById('submitBtn');
+
+                // Real-time validation
+                const firstNameInput = document.getElementById('firstName');
+                const lastNameInput = document.getElementById('lastName');
+                const emailInput = document.getElementById('email');
+                const phoneInput = document.getElementById('phone');
+                const passwordInput = document.getElementById('password');
+                const confirmPasswordInput = document.getElementById('confirmPassword');
+
+                // Validation for each field
+                firstNameInput.addEventListener('blur', () => {
+                    const error = document.getElementById('firstNameError');
+                    if (!firstNameInput.value.trim()) {
+                        firstNameInput.classList.add('error');
+                        firstNameInput.classList.remove('success');
+                        error.classList.add('show');
+                    } else {
+                        firstNameInput.classList.remove('error');
+                        firstNameInput.classList.add('success');
+                        error.classList.remove('show');
+                    }
+                });
+
+                lastNameInput.addEventListener('blur', () => {
+                    const error = document.getElementById('lastNameError');
+                    if (!lastNameInput.value.trim()) {
+                        lastNameInput.classList.add('error');
+                        lastNameInput.classList.remove('success');
+                        error.classList.add('show');
+                    } else {
+                        lastNameInput.classList.remove('error');
+                        lastNameInput.classList.add('success');
+                        error.classList.remove('show');
+                    }
+                });
+
+                emailInput.addEventListener('blur', () => {
+                    const error = document.getElementById('emailError');
+                    if (!validateEmail(emailInput.value)) {
+                        emailInput.classList.add('error');
+                        emailInput.classList.remove('success');
+                        error.classList.add('show');
+                    } else {
+                        emailInput.classList.remove('error');
+                        emailInput.classList.add('success');
+                        error.classList.remove('show');
+                    }
+                });
+
+                phoneInput.addEventListener('blur', () => {
+                    const error = document.getElementById('phoneError');
+                    const validation = validatePhone(phoneInput.value);
+                    if (!validation.valid) {
+                        phoneInput.classList.add('error');
+                        phoneInput.classList.remove('success');
+                        error.classList.add('show');
+                    } else {
+                        phoneInput.classList.remove('error');
+                        phoneInput.classList.add('success');
+                        error.classList.remove('show');
+                    }
+                });
+
+                passwordInput.addEventListener('blur', () => {
+                    const error = document.getElementById('passwordError');
+                    if (!validatePassword(passwordInput.value)) {
+                        passwordInput.classList.add('error');
+                        passwordInput.classList.remove('success');
+                        error.classList.add('show');
+                    } else {
+                        passwordInput.classList.remove('error');
+                        passwordInput.classList.add('success');
+                        error.classList.remove('show');
+                    }
+                });
+
+                confirmPasswordInput.addEventListener('blur', () => {
+                    const error = document.getElementById('confirmPasswordError');
+                    if (confirmPasswordInput.value !== passwordInput.value) {
+                        confirmPasswordInput.classList.add('error');
+                        confirmPasswordInput.classList.remove('success');
+                        error.classList.add('show');
+                    } else {
+                        confirmPasswordInput.classList.remove('error');
+                        confirmPasswordInput.classList.add('success');
+                        error.classList.remove('show');
+                    }
+                });
+
+                // Form submission
+                signupForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Reset all errors
+                    document.querySelectorAll('.error-message').forEach(error => error.classList.remove('show'));
+                    document.querySelectorAll('.form-control').forEach(input => {
+                        input.classList.remove('error', 'success');
+                    });
+
+                    let isValid = true;
+
+                    // Validate first name
+                    if (!firstNameInput.value.trim()) {
+                        firstNameInput.classList.add('error');
+                        document.getElementById('firstNameError').classList.add('show');
+                        isValid = false;
+                    }
+
+                    // Validate last name
+                    if (!lastNameInput.value.trim()) {
+                        lastNameInput.classList.add('error');
+                        document.getElementById('lastNameError').classList.add('show');
+                        isValid = false;
+                    }
+
+                    // Validate email
+                    if (!validateEmail(emailInput.value)) {
+                        emailInput.classList.add('error');
+                        document.getElementById('emailError').classList.add('show');
+                        isValid = false;
+                    }
+
+                    // Validate phone
+                    const phoneValidation = validatePhone(phoneInput.value);
+                    if (!phoneValidation.valid) {
+                        phoneInput.classList.add('error');
+                        document.getElementById('phoneError').classList.add('show');
+                        isValid = false;
+                    }
+
+                    // Validate password
+                    if (!validatePassword(passwordInput.value)) {
+                        passwordInput.classList.add('error');
+                        document.getElementById('passwordError').classList.add('show');
+                        isValid = false;
+                    }
+
+                    // Validate confirm password
+                    if (confirmPasswordInput.value !== passwordInput.value) {
+                        confirmPasswordInput.classList.add('error');
+                        document.getElementById('confirmPasswordError').classList.add('show');
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        // Disable submit button
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+
+                        // Save user data
+                        const userData = {
+                            id: Date.now(),
+                            firstName: firstNameInput.value.trim(),
+                            lastName: lastNameInput.value.trim(),
+                            email: emailInput.value.trim(),
+                            phone: phoneValidation.formatted,
+                            password: passwordInput.value, // In real app, this should be hashed
+                            balance: 0,
+                            totalEarned: 0,
+                            completedTasks: 0,
+                            rating: 0.0,
+                            joinedDate: new Date().toISOString(),
+                            subscribed: true, // No subscription fee required
+                            paymentMade: true, // Mark as paid (no fee required)
+                            paymentDate: new Date().toISOString()
+                        };
+
+                        // Check if email already exists
+                        const allRegisteredUsers = JSON.parse(localStorage.getItem('neon_writers_all_users') || '[]');
+                        const emailExists = allRegisteredUsers.some(user => user.email === emailInput.value.trim());
+
+                        if (emailExists) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-user-plus"></i> Create Free Account';
+                            alert('❌ This email is already registered! Please log in instead.');
+                            return;
+                        }
+
+                        // Add to all registered users list
+                        allRegisteredUsers.push(userData);
+                        localStorage.setItem('neon_writers_all_users', JSON.stringify(allRegisteredUsers));
+
+                        // Set as current logged-in user
+                        localStorage.setItem('neon_writers_current_user', JSON.stringify(userData));
+                        localStorage.setItem('neon_writers_logged_in', 'true');
+
+                        // Also maintain the old single user storage for backward compatibility
+                        localStorage.setItem('neon_writers_user', JSON.stringify(userData));
+
+                        // Append to global users list for admin view (do not store password)
+                        try {
+                            const usersList = JSON.parse(localStorage.getItem('neon_writers_users') || '[]');
+                            const userForList = {
+                                id: userData.id,
+                                fullName: `${userData.firstName} ${userData.lastName}`.trim(),
+                                email: userData.email,
+                                phone: userData.phone,
+                                type: 'writer',
+                                status: 'active',
+                                joined: userData.joinedDate.split('T')[0],
+                                tasksCompleted: 0,
+                                earnings: 0
+                            };
+                            usersList.push(userForList);
+                            localStorage.setItem('neon_writers_users', JSON.stringify(usersList));
+                        } catch (e) {
+                            console.error('Failed to update users list', e);
+                        }
+
+                        // Show success message
+                        setTimeout(() => {
+                            alert('🎉 Account created successfully! Welcome to Neon Writers!\n\nYou are now signed in. You can log in with your email and password next time.');
+
+                            // Close modal
+                            signupModal.style.display = 'none';
+                            document.body.style.overflow = 'auto';
+
+                            // Reset form
+                            signupForm.reset();
+
+                            // Redirect to dashboard
+                            window.location.href = 'mainpage.html';
+                        }, 1000);
+                    }
+                });
+
+                // Login form submission
+                const loginForm = document.getElementById('loginForm');
+                loginForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    const loginEmail = document.getElementById('loginEmail').value.trim();
+                    const loginPassword = document.getElementById('loginPassword').value;
+
+                    // Reset errors
+                    document.querySelectorAll('.error-message').forEach(error => error.classList.remove('show'));
+                    document.querySelectorAll('.form-control').forEach(input => input.classList.remove('error'));
+
+                    let isValid = true;
+
+                    // Validate email
+                    if (!validateEmail(loginEmail)) {
+                        document.getElementById('loginEmail').classList.add('error');
+                        document.getElementById('loginEmailError').classList.add('show');
+                        isValid = false;
+                    }
+
+                    // Validate password
+                    if (!loginPassword) {
+                        document.getElementById('loginPassword').classList.add('error');
+                        document.getElementById('loginPasswordError').classList.add('show');
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        // Check if user exists in localStorage
+                        const savedUser = JSON.parse(localStorage.getItem('neon_writers_user') || '{}');
+                        const allRegisteredUsers = JSON.parse(localStorage.getItem('neon_writers_all_users') || '[]');
+
+                        // Find user by email in all registered users
+                        const registeredUser = allRegisteredUsers.find(user => user.email === loginEmail);
+
+                        if (registeredUser) {
+                            // Check password (in real app, this would be hashed comparison)
+                            if (registeredUser.password === loginPassword) {
+                                // Login successful
+                                localStorage.setItem('neon_writers_logged_in', 'true');
+                                localStorage.setItem('neon_writers_current_user', JSON.stringify(registeredUser));
+
+                                // Ensure user is marked as subscribed (no fee required)
+                                registeredUser.subscribed = true;
+                                registeredUser.paymentMade = true;
+                                registeredUser.lastLoginDate = new Date().toISOString();
+                                localStorage.setItem('neon_writers_current_user', JSON.stringify(registeredUser));
+
+                                // Also update in the all users list
+                                const userIndex = allRegisteredUsers.findIndex(user => user.email === loginEmail);
+                                if (userIndex !== -1) {
+                                    allRegisteredUsers[userIndex] = registeredUser;
+                                    localStorage.setItem('neon_writers_all_users', JSON.stringify(allRegisteredUsers));
+                                }
+
+                                alert('✅ Login successful! Welcome back! Redirecting to dashboard...');
+                                loginModal.style.display = 'none';
+                                document.body.style.overflow = 'auto';
+                                setTimeout(() => {
+                                    window.location.href = 'mainpage.html';
+                                }, 500);
+                            } else {
+                                document.getElementById('loginPassword').classList.add('error');
+                                alert('❌ Incorrect password. Please try again.');
+                            }
+                        } else {
+                            // User doesn't exist
+                            const confirmCreate = confirm('No account found with this email.\n\nWould you like to create a new account with this email?');
+                            if (confirmCreate) {
+                                // Auto-fill signup form and switch to signup modal
+                                document.getElementById('email').value = loginEmail;
+                                document.getElementById('loginEmail').value = '';
+                                document.getElementById('loginPassword').value = '';
+                                loginModal.style.display = 'none';
+                                signupModal.style.display = 'block';
+                                // Focus on first name field
+                                setTimeout(() => {
+                                    document.getElementById('firstName').focus();
+                                }, 100);
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+        <script src="test.js"></script>
+    </body>
+
+</html>

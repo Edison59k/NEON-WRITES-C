@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin - Settings</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            /* Settings specific styles */
+            .settings-tabs {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 30px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                padding-bottom: 10px;
+                flex-wrap: wrap;
+            }
+
+            .settings-tab {
+                padding: 10px 20px;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--muted-text);
+                border: none;
+                cursor: pointer;
+                transition: all 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .settings-tab.active {
+                background: var(--gradient-primary);
+                color: white;
+            }
+
+            .settings-tab:hover:not(.active) {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .settings-panel {
+                display: none;
+                animation: fadeIn 0.3s ease;
+            }
+
+            .settings-panel.active {
+                display: block;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .settings-card {
+                background: var(--card-bg);
+                border-radius: 15px;
+                padding: 30px;
+                margin-bottom: 20px;
+                border: 1px solid rgba(138, 43, 226, 0.2);
+            }
+
+            .settings-card h3 {
+                color: var(--light-text);
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .settings-group {
+                margin-bottom: 25px;
+            }
+
+            .settings-group label {
+                display: block;
+                margin-bottom: 8px;
+                color: var(--light-text);
+                font-weight: 500;
+            }
+
+            .settings-hint {
+                color: var(--muted-text);
+                font-size: 14px;
+                margin-top: 5px;
+            }
+
+            .switch {
+                position: relative;
+                display: inline-block;
+                width: 60px;
+                height: 30px;
+            }
+
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(255, 255, 255, 0.2);
+                transition: .4s;
+                border-radius: 34px;
+            }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 22px;
+                width: 22px;
+                left: 4px;
+                bottom: 4px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+            }
+
+            input:checked+.slider {
+                background: var(--gradient-primary);
+            }
+
+            input:checked+.slider:before {
+                transform: translateX(30px);
+            }
+
+            .toggle-group {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding: 15px;
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 10px;
+            }
+
+            .toggle-label {
+                flex: 1;
+            }
+
+            .toggle-label h4 {
+                color: var(--light-text);
+                margin-bottom: 5px;
+            }
+
+            .toggle-label p {
+                color: var(--muted-text);
+                font-size: 14px;
+            }
+
+            .color-picker {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .color-option {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                cursor: pointer;
+                border: 2px solid transparent;
+                transition: all 0.3s;
+            }
+
+            .color-option.active {
+                border-color: white;
+                transform: scale(1.1);
+            }
+
+            .theme-preview {
+                width: 100%;
+                height: 100px;
+                border-radius: 10px;
+                margin-top: 10px;
+                background: var(--dark-bg);
+                border: 1px solid rgba(138, 43, 226, 0.3);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .preview-topbar {
+                height: 20px;
+                background: rgba(138, 43, 226, 0.3);
+                border-bottom: 1px solid rgba(138, 43, 226, 0.5);
+            }
+
+            .preview-sidebar {
+                width: 40%;
+                height: 80px;
+                background: rgba(10, 10, 26, 0.8);
+                border-right: 1px solid rgba(138, 43, 226, 0.3);
+                float: left;
+            }
+
+            .preview-content {
+                width: 60%;
+                height: 80px;
+                float: left;
+                background: rgba(20, 20, 40, 0.8);
+            }
+
+            .save-btn-container {
+                text-align: right;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .danger-zone {
+                border-color: rgba(255, 71, 87, 0.3) !important;
+                background: rgba(255, 71, 87, 0.1) !important;
+            }
+
+            .danger-zone h3 {
+                color: #ff4757;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Neon Background -->
+        <div class="neon-background">
+            <div class="neon-grid"></div>
+        </div>
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <a href="mainpage.html" class="brand">
+                <i class="fas fa-feather"></i> Neon Writers
+            </a>
+
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Admin Panel</div>
+                    <div class="user-balance" id="userBalance">Admin</div>
+                </div>
+                <a href="index.html" class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <ul class="nav-menu">
+                    <li><a href="mainpage.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="admin-upload.html"><i class="fas fa-upload"></i> Upload Tasks</a></li>
+                    <li><a href="admin-users.html"><i class="fas fa-users"></i> Users</a></li>
+                    <li><a href="admin-bids.html"><i class="fas fa-gavel"></i> Bids Management</a></li>
+                    <li><a href="admin-payments.html"><i class="fas fa-credit-card"></i> Payments</a></li>
+                    <li><a href="admin-reports.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                    <li><a href="admin-settings.html" class="active"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="page-header">
+                    <h2><i class="fas fa-cog"></i> System Settings</h2>
+                    <div style="font-size: 16px; color: var(--muted-text);">
+                        Configure system preferences and manage platform settings
+                    </div>
+                </div>
+
+                <!-- Settings Tabs -->
+                <div class="settings-tabs">
+                    <button class="settings-tab active" data-tab="general">
+                        <i class="fas fa-sliders-h"></i> General
+                    </button>
+                    <button class="settings-tab" data-tab="appearance">
+                        <i class="fas fa-palette"></i> Appearance
+                    </button>
+                    <button class="settings-tab" data-tab="notifications">
+                        <i class="fas fa-bell"></i> Notifications
+                    </button>
+                    <button class="settings-tab" data-tab="security">
+                        <i class="fas fa-shield-alt"></i> Security
+                    </button>
+                    <button class="settings-tab" data-tab="payment">
+                        <i class="fas fa-credit-card"></i> Payment
+                    </button>
+                    <button class="settings-tab" data-tab="api">
+                        <i class="fas fa-code"></i> API
+                    </button>
+                </div>
+
+                <!-- General Settings Panel -->
+                <div class="settings-panel active" id="generalPanel">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-info-circle"></i> Platform Information</h3>
+
+                        <div class="settings-group">
+                            <label>Platform Name</label>
+                            <input type="text" class="form-control" id="platformName" value="Neon Writers">
+                            <div class="settings-hint">This name appears throughout the platform</div>
+                        </div>
+
+                        <div class="settings-group">
+                            <label>Admin Email</label>
+                            <input type="email" class="form-control" id="adminEmail" value="admin@neonwriters.com">
+                            <div class="settings-hint">Primary contact email for system notifications</div>
+                        </div>
+
+                        <div class="settings-group">
+                            <label>Support Email</label>
+                            <input type="email" class="form-control" id="supportEmail" value="support@neonwriters.com">
+                            <div class="settings-hint">Email displayed for user support inquiries</div>
+                        </div>
+
+                        <div class="settings-group">
+                            <label>Platform URL</label>
+                            <input type="url" class="form-control" id="platformUrl" value="https://neonwriters.com">
+                            <div class="settings-hint">Your platform's main website URL</div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3><i class="fas fa-tasks"></i> Task Settings</h3>
+
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <h4>Auto-approve Tasks</h4>
+                                <p>Automatically approve uploaded tasks without manual review</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="autoApproveTasks" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <h4>Allow Task Editing</h4>
+                                <p>Allow writers to edit their tasks after submission</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="allowTaskEditing">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <h4>Enable Task Ratings</h4>
+                                <p>Allow clients to rate completed tasks</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="enableTaskRatings" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="settings-group">
+                            <label>Default Task Deadline (Days)</label>
+                            <input type="number" class="form-control" id="defaultDeadline" value="7" min="1" max="30">
+                            <div class="settings-hint">Default number of days for task completion</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appearance Settings Panel -->
+                <div class="settings-panel" id="appearancePanel">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-palette"></i> Theme Settings</h3>
+
+                        <div class="settings-group">
+                            <label>Primary Color Theme</label>
+                            <div class="color-picker">
+                                <div class="color-option active" style="background: #8a2be2;" data-color="purple"></div>
+                                <div class="color-option" style="background: #00b894;" data-color="green"></div>
+                                <div class="color-option" style="background: #0984e3;" data-color="blue"></div>
+                                <div class="color-option" style="background: #d63031;" data-color="red"></div>
+                                <div class="color-option" style="background: #fdcb6e;" data-color="yellow"></div>
+                            </div>
+                            <div class="theme-preview">
+                                <div class="preview-topbar"></div>
+                                <div class="preview-sidebar"></div>
+                                <div class="preview-content"></div>
+                            </div>
+                        </div>
+
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <h4>Dark Mode</h4>
+                                <p>Use dark theme for the entire platform</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="darkMode" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <h4>Neon Effects</h4>
+                                <p>Enable glowing neon effects and animations</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="neonEffects" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="settings-group">
+                            <label>Logo</label>
+                            <input type="file" class="form-control" id="logoUpload" accept="image/*">
+                            <div class="settings-hint">Recommended size: 200x60px, PNG or SVG format</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Settings Panel -->
+                <div class="settings-panel" id="securityPanel">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-shield-alt"></i> Security Settings</h3>
+
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <h4>Two-Factor Authentication</h4>
+                                <p>Require 2FA for admin accounts</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="enable2FA">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-group">
+                            <div class="toggle-label">
+                                <h4>IP Whitelisting</h4>
+                                <p>Restrict admin access to specific IP addresses</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="ipWhitelisting">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="settings-group">
+                            <label>Session Timeout (Minutes)</label>
+                            <input type="number" class="form-control" id="sessionTimeout" value="30" min="5" max="240">
+                            <div class="settings-hint">Automatically log out inactive users after this time</div>
+                        </div>
+
+                        <div class="settings-group">
+                            <label>Password Policy</label>
+                            <select class="form-control" id="passwordPolicy">
+                                <option value="weak">Weak (6+ characters)</option>
+                                <option value="medium" selected>Medium (8+ characters, letters & numbers)</option>
+                                <option value="strong">Strong (10+ characters, mixed case, symbols)</option>
+                            </select>
+                            <div class="settings-hint">Minimum password requirements for user accounts</div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card danger-zone">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+
+                        <div class="settings-group">
+                            <label>Clear All Data</label>
+                            <p style="color: var(--muted-text); margin-bottom: 15px;">Permanently delete all tasks,
+                                users, and bids data</p>
+                            <button class="btn btn-danger" onclick="clearAllData()">
+                                <i class="fas fa-trash"></i> Clear All Data
+                            </button>
+                        </div>
+
+                        <div class="settings-group">
+                            <label>Reset Platform</label>
+                            <p style="color: var(--muted-text); margin-bottom: 15px;">Reset all settings to default
+                                values</p>
+                            <button class="btn btn-secondary" onclick="resetSettings()">
+                                <i class="fas fa-redo"></i> Reset to Defaults
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="save-btn-container">
+                    <button class="btn btn-primary" id="saveSettingsBtn">
+                        <i class="fas fa-save"></i> Save All Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                checkAdminAuth();
+                initializeSettings();
+
+                // Tab switching
+                document.querySelectorAll('.settings-tab').forEach(tab => {
+                    tab.addEventListener('click', function () {
+                        const tabId = this.dataset.tab;
+                        switchTab(tabId);
+                    });
+                });
+
+                // Color picker
+                document.querySelectorAll('.color-option').forEach(color => {
+                    color.addEventListener('click', function () {
+                        document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+                });
+
+                // Save settings
+                document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+                document.getElementById('logoutBtn').addEventListener('click', logout);
+            });
+
+            function checkAdminAuth() {
+                const isLoggedIn = localStorage.getItem('neon_writers_logged_in') === 'true';
+                if (!isLoggedIn) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const userData = JSON.parse(localStorage.getItem('neon_writers_user') || '{}');
+                const isAdmin = userData.email && (userData.email.includes('admin') || userData.isAdmin === true);
+
+                if (!isAdmin) {
+                    alert('Access Denied: Admin privileges required');
+                    window.location.href = 'mainpage.html';
+                    return;
+                }
+
+                document.getElementById('userName').textContent = `Admin: ${userData.firstName || 'Administrator'}`;
+            }
+
+            function initializeSettings() {
+                // Load saved settings from localStorage
+                const settings = JSON.parse(localStorage.getItem('neon_writers_settings') || '{}');
+
+                // General settings
+                if (settings.platformName) document.getElementById('platformName').value = settings.platformName;
+                if (settings.adminEmail) document.getElementById('adminEmail').value = settings.adminEmail;
+                if (settings.supportEmail) document.getElementById('supportEmail').value = settings.supportEmail;
+                if (settings.platformUrl) document.getElementById('platformUrl').value = settings.platformUrl;
+
+                // Task settings
+                if (settings.autoApproveTasks !== undefined)
+                    document.getElementById('autoApproveTasks').checked = settings.autoApproveTasks;
+                if (settings.allowTaskEditing !== undefined)
+                    document.getElementById('allowTaskEditing').checked = settings.allowTaskEditing;
+                if (settings.enableTaskRatings !== undefined)
+                    document.getElementById('enableTaskRatings').checked = settings.enableTaskRatings;
+                if (settings.defaultDeadline)
+                    document.getElementById('defaultDeadline').value = settings.defaultDeadline;
+
+                // Appearance settings
+                if (settings.darkMode !== undefined)
+                    document.getElementById('darkMode').checked = settings.darkMode;
+                if (settings.neonEffects !== undefined)
+                    document.getElementById('neonEffects').checked = settings.neonEffects;
+                if (settings.primaryColor) {
+                    document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
+                    const activeColor = document.querySelector(`.color-option[data-color="${settings.primaryColor}"]`);
+                    if (activeColor) activeColor.classList.add('active');
+                }
+
+                // Security settings
+                if (settings.enable2FA !== undefined)
+                    document.getElementById('enable2FA').checked = settings.enable2FA;
+                if (settings.ipWhitelisting !== undefined)
+                    document.getElementById('ipWhitelisting').checked = settings.ipWhitelisting;
+                if (settings.sessionTimeout)
+                    document.getElementById('sessionTimeout').value = settings.sessionTimeout;
+                if (settings.passwordPolicy)
+                    document.getElementById('passwordPolicy').value = settings.passwordPolicy;
+            }
+
+            function switchTab(tabId) {
+                // Update active tab
+                document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active'));
+                document.querySelector(`.settings-tab[data-tab="${tabId}"]`).classList.add('active');
+
+                // Show active panel
+                document.querySelectorAll('.settings-panel').forEach(panel => panel.classList.remove('active'));
+                document.getElementById(`${tabId}Panel`).classList.add('active');
+            }
+
+            function saveSettings() {
+                // Collect all settings
+                const settings = {
+                    // General
+                    platformName: document.getElementById('platformName').value,
+                    adminEmail: document.getElementById('adminEmail').value,
+                    supportEmail: document.getElementById('supportEmail').value,
+                    platformUrl: document.getElementById('platformUrl').value,
+
+                    // Task settings
+                    autoApproveTasks: document.getElementById('autoApproveTasks').checked,
+                    allowTaskEditing: document.getElementById('allowTaskEditing').checked,
+                    enableTaskRatings: document.getElementById('enableTaskRatings').checked,
+                    defaultDeadline: parseInt(document.getElementById('defaultDeadline').value),
+
+                    // Appearance
+                    darkMode: document.getElementById('darkMode').checked,
+                    neonEffects: document.getElementById('neonEffects').checked,
+                    primaryColor: document.querySelector('.color-option.active').dataset.color,
+
+                    // Security
+                    enable2FA: document.getElementById('enable2FA').checked,
+                    ipWhitelisting: document.getElementById('ipWhitelisting').checked,
+                    sessionTimeout: parseInt(document.getElementById('sessionTimeout').value),
+                    passwordPolicy: document.getElementById('passwordPolicy').value,
+
+                    lastUpdated: new Date().toISOString()
+                };
+
+                // Save to localStorage
+                localStorage.setItem('neon_writers_settings', JSON.stringify(settings));
+
+                // Show success message
+                alert('Settings saved successfully!');
+
+                // Apply settings immediately
+                applySettings(settings);
+            }
+
+            function applySettings(settings) {
+                // Apply theme color
+                const root = document.documentElement;
+                const colorMap = {
+                    purple: '#8a2be2',
+                    green: '#00b894',
+                    blue: '#0984e3',
+                    red: '#d63031',
+                    yellow: '#fdcb6e'
+                };
+
+                if (colorMap[settings.primaryColor]) {
+                    root.style.setProperty('--neon-purple', colorMap[settings.primaryColor]);
+                }
+
+                // Apply dark/light mode
+                if (!settings.darkMode) {
+                    root.style.setProperty('--dark-bg', '#ffffff');
+                    root.style.setProperty('--light-text', '#000000');
+                    root.style.setProperty('--muted-text', '#666666');
+                } else {
+                    root.style.setProperty('--dark-bg', '#0a0a1a');
+                    root.style.setProperty('--light-text', '#ffffff');
+                    root.style.setProperty('--muted-text', '#b0b0d0');
+                }
+
+                // Toggle neon effects
+                if (!settings.neonEffects) {
+                    document.querySelector('.neon-grid').style.opacity = '0.1';
+                } else {
+                    document.querySelector('.neon-grid').style.opacity = '1';
+                }
+            }
+
+            function clearAllData() {
+                if (confirm('⚠️ WARNING: This will permanently delete ALL data including tasks, users, bids, and payments. This action cannot be undone.\n\nAre you absolutely sure?')) {
+                    // Clear all data
+                    localStorage.removeItem('neon_writers_tasks');
+                    localStorage.removeItem('neon_writers_users');
+                    localStorage.removeItem('neon_writers_user_bids');
+                    localStorage.removeItem('neon_writers_payments');
+
+                    alert('All data has been cleared. The page will now reload.');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }
+            }
+
+            function resetSettings() {
+                if (confirm('Reset all settings to default values?')) {
+                    localStorage.removeItem('neon_writers_settings');
+                    initializeSettings();
+                    alert('Settings reset to defaults.');
+                }
+            }
+
+            function logout() {
+                localStorage.removeItem('neon_writers_logged_in');
+                window.location.href = 'index.html';
+            }
+        </script>
+    </body>
+
+</html>
