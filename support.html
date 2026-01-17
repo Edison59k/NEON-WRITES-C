@@ -1168,16 +1168,40 @@ Please respond to this ticket by replying to this email or through the admin das
                 });
                 localStorage.setItem('neon_writers_sent_emails', JSON.stringify(sentEmails));
 
-                // TODO: In production, send via backend API
-                // Example:
-                // fetch('/api/send-email', {
-                //     method: 'POST',
-                //     headers: { 'Content-Type': 'application/json' },
-                //     body: JSON.stringify(emailData)
-                // })
-                // .then(response => response.json())
-                // .then(data => console.log('Email sent:', data))
-                // .catch(error => console.error('Error sending email:', error));
+                // Send email via backend API
+                fetch('/api/send-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(emailData)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Email service error: ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Email sent successfully:', data);
+                        // Update status in localStorage
+                        const emails = JSON.parse(localStorage.getItem('neon_writers_sent_emails') || '[]');
+                        const emailIndex = emails.findIndex(e => e.to === emailData.to && e.subject === emailData.subject);
+                        if (emailIndex !== -1) {
+                            emails[emailIndex].status = 'sent';
+                            emails[emailIndex].sentTime = new Date().toLocaleString();
+                            localStorage.setItem('neon_writers_sent_emails', JSON.stringify(emails));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error sending email:', error);
+                        // Update status to failed in localStorage
+                        const emails = JSON.parse(localStorage.getItem('neon_writers_sent_emails') || '[]');
+                        const emailIndex = emails.findIndex(e => e.to === emailData.to && e.subject === emailData.subject);
+                        if (emailIndex !== -1) {
+                            emails[emailIndex].status = 'failed';
+                            emails[emailIndex].errorMessage = error.message;
+                            localStorage.setItem('neon_writers_sent_emails', JSON.stringify(emails));
+                        }
+                    });
 
                 console.log('Support email prepared for sending:', emailData);
             }
