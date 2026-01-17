@@ -1045,16 +1045,33 @@
                         return;
                     }
 
-                    alert(`Support ticket submitted successfully!\n\nSubject: ${subject}\nCategory: ${category}\n\nOur support team will get back to you within 24 hours.`);
+                    // Get user data
+                    const userData = JSON.parse(localStorage.getItem('neon_writers_user') || '{}');
+                    const userEmail = userData.email || 'unknown@email.com';
+                    const userName = `${userData.firstName || 'User'} ${userData.lastName || ''}`.trim();
 
-                    // Add a notification email for this ticket
-                    EmailNotificationSystem.addEmail(
-                        'Neon Writers Support',
-                        `Ticket confirmed: ${subject}`,
-                        `Your support ticket has been received and assigned ticket ID #${Date.now()}. We will respond within 24 hours.`
-                    );
-                    EmailNotificationSystem.updateBadge();
-                    EmailNotificationSystem.loadNotifications();
+                    // Create ticket object
+                    const ticketId = `TKT-${Date.now()}`;
+                    const ticket = {
+                        id: ticketId,
+                        subject: subject,
+                        category: category,
+                        description: description,
+                        userEmail: userEmail,
+                        userName: userName,
+                        submittedDate: new Date().toLocaleString(),
+                        status: 'open'
+                    };
+
+                    // Store ticket in localStorage for admin dashboard
+                    const allTickets = JSON.parse(localStorage.getItem('neon_writers_support_tickets') || '[]');
+                    allTickets.push(ticket);
+                    localStorage.setItem('neon_writers_support_tickets', JSON.stringify(allTickets));
+
+                    // Simulate sending email to support
+                    sendSupportEmail(ticket);
+
+                    alert(`Support ticket submitted successfully!\n\nTicket ID: ${ticketId}\nSubject: ${subject}\nCategory: ${category}\n\nOur support team will review your ticket and respond to ${userEmail} within 24 hours.`);
 
                     // Reset form and hide it
                     document.getElementById('ticket-subject').value = '';
@@ -1110,6 +1127,60 @@
                     });
                 }
             });
+
+            /**
+             * Send support ticket to support email
+             * In production, this would call a backend API
+             */
+            function sendSupportEmail(ticket) {
+                // Prepare email data
+                const emailData = {
+                    to: 'neonwriters3@gmail.com',
+                    from: ticket.userEmail,
+                    subject: `[Support Ticket ${ticket.id}] ${ticket.subject}`,
+                    category: ticket.category,
+                    message: `
+New Support Ticket Received
+
+Ticket ID: ${ticket.id}
+From: ${ticket.userName} (${ticket.userEmail})
+Category: ${ticket.category}
+Submitted: ${ticket.submittedDate}
+
+Subject: ${ticket.subject}
+
+Description:
+${ticket.description}
+
+---
+Please respond to this ticket by replying to this email or through the admin dashboard.
+                    `,
+                    userEmail: ticket.userEmail,
+                    userName: ticket.userName
+                };
+
+                // Store in localStorage for future backend integration
+                const sentEmails = JSON.parse(localStorage.getItem('neon_writers_sent_emails') || '[]');
+                sentEmails.push({
+                    ...emailData,
+                    sentDate: new Date().toLocaleString(),
+                    status: 'pending_send'
+                });
+                localStorage.setItem('neon_writers_sent_emails', JSON.stringify(sentEmails));
+
+                // TODO: In production, send via backend API
+                // Example:
+                // fetch('/api/send-email', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify(emailData)
+                // })
+                // .then(response => response.json())
+                // .then(data => console.log('Email sent:', data))
+                // .catch(error => console.error('Error sending email:', error));
+
+                console.log('Support email prepared for sending:', emailData);
+            }
         </script>
         <script src="validate.js"></script>
     </body>

@@ -1,15 +1,17 @@
 /**
  * Neon Writers Email Notification System
  * Provides notification functionality across all pages
+ * Only tracks RECEIVED emails from Neon Writers Support
  */
 
 const EmailNotificationSystem = {
     /**
-     * Get all user emails from localStorage
+     * Get all received user emails from localStorage
+     * Only includes emails FROM support (received), not sent to support
      */
     getUserEmails: function () {
         try {
-            return JSON.parse(localStorage.getItem('neon_writers_user_emails') || '[]');
+            return JSON.parse(localStorage.getItem('neon_writers_received_emails') || '[]');
         } catch (e) {
             console.error('Error loading emails:', e);
             return [];
@@ -17,38 +19,40 @@ const EmailNotificationSystem = {
     },
 
     /**
-     * Save user emails to localStorage
+     * Save received user emails to localStorage
      */
     saveUserEmails: function (emails) {
-        localStorage.setItem('neon_writers_user_emails', JSON.stringify(emails));
+        localStorage.setItem('neon_writers_received_emails', JSON.stringify(emails));
     },
 
     /**
-     * Add a new email notification
+     * Add a new received email notification
+     * These are emails FROM Neon Writers to the user
      */
-    addEmail: function (sender, subject, message) {
+    addReceivedEmail: function (sender, subject, message) {
         const emails = this.getUserEmails();
         emails.unshift({
             id: Date.now(),
-            sender: sender,
+            sender: sender || 'Neon Writers Support',
             subject: subject,
             message: message,
             timestamp: new Date().toLocaleString(),
-            read: false
+            read: false,
+            type: 'received'
         });
         this.saveUserEmails(emails);
         return emails;
     },
 
     /**
-     * Get count of unread emails
+     * Get count of unread RECEIVED emails only
      */
     getUnreadCount: function () {
-        return this.getUserEmails().filter(e => !e.read).length;
+        return this.getUserEmails().filter(e => !e.read && e.type === 'received').length;
     },
 
     /**
-     * Mark email as read
+     * Mark received email as read
      */
     markAsRead: function (emailId) {
         const emails = this.getUserEmails();
@@ -116,10 +120,10 @@ const EmailNotificationSystem = {
     },
 
     /**
-     * Load and display notifications
+     * Load and display received notifications only
      */
     loadNotifications: function () {
-        const emails = this.getUserEmails();
+        const emails = this.getUserEmails().filter(e => e.type === 'received');
         const list = document.getElementById('notificationsList');
         const empty = document.getElementById('emptyNotifications');
 
@@ -142,7 +146,7 @@ const EmailNotificationSystem = {
     },
 
     /**
-     * View a specific email notification
+     * View a specific received email notification
      */
     viewEmail: function (emailId) {
         this.markAsRead(emailId);
