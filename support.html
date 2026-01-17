@@ -58,6 +58,11 @@
                 font-size: 18px;
                 color: #5a6c7d;
                 cursor: pointer;
+                transition: color 0.3s;
+            }
+
+            .notification-bell:hover {
+                color: #1e3c72;
             }
 
             .notification-badge {
@@ -73,6 +78,112 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
+            }
+
+            /* Notifications Modal */
+            .notifications-modal {
+                display: none;
+                position: fixed;
+                top: 70px;
+                right: 20px;
+                width: 400px;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 5px 30px rgba(0, 0, 0, 0.2);
+                z-index: 1001;
+                max-height: 500px;
+                overflow-y: auto;
+            }
+
+            .notifications-header {
+                padding: 15px 20px;
+                border-bottom: 1px solid #e9ecef;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background-color: #f8f9fa;
+            }
+
+            .notifications-header h3 {
+                color: #1e3c72;
+                font-size: 16px;
+                margin: 0;
+            }
+
+            .close-notifications {
+                background: none;
+                border: none;
+                color: #6c757d;
+                cursor: pointer;
+                font-size: 18px;
+            }
+
+            .close-notifications:hover {
+                color: #1e3c72;
+            }
+
+            .notifications-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .notification-item {
+                padding: 15px 20px;
+                border-bottom: 1px solid #e9ecef;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+
+            .notification-item:hover {
+                background-color: #f8f9fa;
+            }
+
+            .notification-item.unread {
+                background-color: #e7f5ff;
+                border-left: 4px solid #4dabf7;
+            }
+
+            .notification-sender {
+                font-weight: 600;
+                color: #1e3c72;
+                font-size: 14px;
+                margin-bottom: 3px;
+            }
+
+            .notification-subject {
+                color: #495057;
+                font-size: 13px;
+                margin-bottom: 5px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .notification-time {
+                font-size: 12px;
+                color: #adb5bd;
+            }
+
+            .notifications-empty {
+                padding: 30px 20px;
+                text-align: center;
+                color: #adb5bd;
+            }
+
+            .notifications-empty i {
+                font-size: 32px;
+                margin-bottom: 10px;
+                display: block;
+                color: #dee2e6;
+            }
+
+            @media (max-width: 576px) {
+                .notifications-modal {
+                    width: calc(100% - 40px);
+                    right: 20px;
+                    left: 20px;
+                }
             }
 
             .user-profile {
@@ -571,17 +682,32 @@
             </div>
 
             <div class="user-info">
-                <div class="notification-bell">
+                <div class="notification-bell" id="notificationBell" title="View notifications">
                     <i class="fas fa-bell"></i>
-                    <span class="notification-badge">1</span>
+                    <span class="notification-badge" id="emailNotificationBadge">0</span>
                 </div>
                 <div class="user-profile">
-                    <div class="user-avatar">JD</div>
+                    <div class="user-avatar" id="userAvatarInitials">JD</div>
                     <div>
-                        <div style="font-weight: 600;">John Doe</div>
-                        <div style="font-size: 13px; color: #6c757d;">Survey Contributor</div>
+                        <div style="font-weight: 600;" id="displayUserName">John Doe</div>
+                        <div style="font-size: 13px; color: #6c757d;" id="userRole">Survey Contributor</div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Notifications Modal -->
+        <div class="notifications-modal" id="notificationsModal">
+            <div class="notifications-header">
+                <h3>Email Notifications</h3>
+                <button class="close-notifications" onclick="closeNotifications()">&times;</button>
+            </div>
+            <ul class="notifications-list" id="notificationsList">
+                <!-- Notifications will be loaded here -->
+            </ul>
+            <div class="notifications-empty" id="emptyNotifications" style="display: none;">
+                <i class="fas fa-inbox"></i>
+                <p>No notifications yet</p>
             </div>
         </div>
 
@@ -767,7 +893,7 @@
                     </div>
                 </div>
 
-                <!-- Ticket Status -->
+                <!-- Ticket Status
                 <div class="ticket-status">
                     <h4><i class="fas fa-ticket-alt"></i> Your Support Tickets</h4>
 
@@ -800,7 +926,7 @@
                     <div style="text-align: center; margin-top: 20px;">
                         <button class="btn btn-secondary" id="viewAllTickets">View All Tickets</button>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Contact Information -->
                 <div class="contact-info">
@@ -853,9 +979,13 @@
             </div>
         </div>
 
+        <script src="notifications.js"></script>
         <script>
             // Support page functionality
             document.addEventListener('DOMContentLoaded', function () {
+                // Initialize user data and notifications
+                initializeUserData();
+
                 // FAQ toggle functionality
                 const faqQuestions = document.querySelectorAll('.faq-question');
                 faqQuestions.forEach(question => {
@@ -917,6 +1047,15 @@
 
                     alert(`Support ticket submitted successfully!\n\nSubject: ${subject}\nCategory: ${category}\n\nOur support team will get back to you within 24 hours.`);
 
+                    // Add a notification email for this ticket
+                    EmailNotificationSystem.addEmail(
+                        'Neon Writers Support',
+                        `Ticket confirmed: ${subject}`,
+                        `Your support ticket has been received and assigned ticket ID #${Date.now()}. We will respond within 24 hours.`
+                    );
+                    EmailNotificationSystem.updateBadge();
+                    EmailNotificationSystem.loadNotifications();
+
                     // Reset form and hide it
                     document.getElementById('ticket-subject').value = '';
                     document.getElementById('ticket-category').value = '';
@@ -931,38 +1070,45 @@
 
                 // Live chat button
                 const startLiveChatBtn = document.getElementById('startLiveChat');
-                startLiveChatBtn.addEventListener('click', function () {
-                    const now = new Date();
-                    const hours = now.getHours();
-                    const day = now.getDay();
+                if (startLiveChatBtn) {
+                    startLiveChatBtn.addEventListener('click', function () {
+                        const now = new Date();
+                        const hours = now.getHours();
+                        const day = now.getDay();
 
-                    // Check if within business hours (9am-6pm EST, Mon-Fri)
-                    // Note: This is a simple check and doesn't account for time zones
-                    if (day >= 1 && day <= 5 && hours >= 9 && hours < 18) {
-                        alert('Connecting you to a live support agent...');
-                    } else {
-                        alert('Live chat is only available Monday-Friday, 9am-6pm EST. Please send us an email or submit a support ticket for assistance.');
-                    }
-                });
+                        // Check if within business hours (9am-6pm EST, Mon-Fri)
+                        if (day >= 1 && day <= 5 && hours >= 9 && hours < 18) {
+                            alert('Connecting you to a live support agent...');
+                        } else {
+                            alert('Live chat is only available Monday-Friday, 9am-6pm EST. Please send us an email or submit a support ticket for assistance.');
+                        }
+                    });
+                }
 
                 // View all tickets button
                 const viewAllTicketsBtn = document.getElementById('viewAllTickets');
-                viewAllTicketsBtn.addEventListener('click', function () {
-                    alert('Redirecting to full ticket history page...');
-                });
+                if (viewAllTicketsBtn) {
+                    viewAllTicketsBtn.addEventListener('click', function () {
+                        alert('Redirecting to full ticket history page...');
+                    });
+                }
 
                 // Browse FAQs button
                 const browseFAQsBtn = document.querySelector('.support-card:nth-child(1) .btn-primary');
-                browseFAQsBtn.addEventListener('click', function () {
-                    // Scroll to FAQ section
-                    document.querySelector('.faq-section').scrollIntoView({ behavior: 'smooth' });
-                });
+                if (browseFAQsBtn) {
+                    browseFAQsBtn.addEventListener('click', function () {
+                        // Scroll to FAQ section
+                        document.querySelector('.faq-section').scrollIntoView({ behavior: 'smooth' });
+                    });
+                }
 
                 // View guides button
                 const viewGuidesBtn = document.querySelector('.support-card:nth-child(3) .btn-secondary');
-                viewGuidesBtn.addEventListener('click', function () {
-                    alert('Opening documentation and guides page...');
-                });
+                if (viewGuidesBtn) {
+                    viewGuidesBtn.addEventListener('click', function () {
+                        alert('Opening documentation and guides page...');
+                    });
+                }
             });
         </script>
         <script src="validate.js"></script>
